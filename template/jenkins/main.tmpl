@@ -1,0 +1,41 @@
+{{ define "jenkins/main.tmpl" }}
+<html>
+    <head>
+        <title>Gobra Jenkins {{ .project }} Project</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="author" content="Wen Zhou">
+    </head>
+    <body>
+        <div style="font-family: 'Sans-Light'; float:right;margin-right:10px;font-size: small">Version: <span id="version">{{ .version }}</span></div>
+        <div class="container" style="font-family: 'Sans-Regular';">
+            <div class="row">
+                <div class="col-sm-1">&nbsp;</div>
+                <div class="col-sm-10">    
+                <div style="margin-top:5px;">
+                <p>
+                    <ul class="list-group">
+                    <li class="list-group-item list-group-item-light">
+                         Here you can get most of the information of our Jenkins services 
+                         Please <a href="to_do_our_google_page" target="_blank">read carefully</a> if you have more questions.
+                    </li>
+                    <li class="list-group-item list-group-item-light">
+                       <a href="/"> Back to the future &#128072;<= </a>
+                    </li>
+                    </ul>
+                </p>
+            </div>
+
+            <div  class="custom">
+                <form action="/queryJenkins" method="POST">  
+                    <h2>Jenkins Valid branch</h2>
+                    <div class="form-group">
+                        <label for="coce"><span>code branch</span><br><input type="radio" id="master" name="branchType[]" value="code" checked></label> 
+                        <label for="data"><span>data branch</span><br><input type="radio" id="image" name="branchType[]" value="data"></label>
+                    </div>
+
+            </form>
+        </div>
+    </body>
+{{ template "foot.html" .}}
+{{ end }}
