@@ -9,6 +9,8 @@ import (
 	"io/ioutil"
 	"encoding/json"
 	"fmt"
+	"strings"
+
 )
 
 const (
@@ -61,7 +63,7 @@ func queryGitlab(path string, isFile bool) ([]byte) {
 	req, err := http.NewRequest("GET", endpoint, nil)
 	req.Header.Add("Authorization", token)
 
-	// resp, err := http.Get(endpoint);
+	// resp, err := http.Get(endpoint); if we do not need token, this should be enough
 	client := &http.Client{}
     resp, err := client.Do(req)
     
@@ -87,7 +89,6 @@ func parseJSONResponse(body []byte)(*gitlabResponseFolder) {
 		errorHandler(err)
 	}
 	fmt.Println(&s)
-	// log.Println("WEN--getting:" + s)
     return s
 }
 
@@ -96,6 +97,19 @@ func getJenkinsMasters(Projshort string) (*gitlabResponseFolder) {
 	return parseJSONResponse(body)
 }
 
+func getJenkinsBranches(Projshort string) (*gitlabResponseFolder) {
+	body := queryGitlab(Projshort+"/branchSettings", false)
+	return parseJSONResponse(body)
+}
+
+
+/////////////////////////////template function//////////////////////////
+func formatJSONResp(n string) string {
+	return strings.Split(n, ".")[0]
+	
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // routine functions for /jenkins/info
 func projectInfoHandler(c *gin.Context) {
 	log.Println("Calling: jenkinsInfoHandler")
@@ -114,12 +128,15 @@ func jenkinsInstanceHandler(c *gin.Context) {
 	log.Println("Load page in path: " + c.Request.URL.Path)
 	projName := c.Param("proj")
 	allMasters := getJenkinsMasters(projName)
+	allBranches := getJenkinsBranches(projName)
 	//if (gitlabResponseFolder{}) == allMasters  {log.Println("WEN-DEBIG: allMasters is empty, damn it ")}
 
 	c.HTML(http.StatusOK, "jenkins/main.tmpl", gin.H{
 		"version": render.VersionPage,
 		"author":  render.ContactAuthor,
 		"project": projName,
-		"payload": allMasters,
+		"payloadmaster": allMasters,
+		"payloadbranch": allBranches,
+
 	})
 }

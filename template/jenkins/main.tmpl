@@ -28,16 +28,16 @@
 
             <div  class="custom">
                 <form action="/queryJenkins" method="POST">  
-                    <h2>Jenkins Valid controller for {{ .project }} </h2>
+                    <h2>Jenkins Masters for {{ .project }} </h2>
                     <div class="form-group">
-                        {{range .payload}}
-                            <li class="list-group-item list-group-item-light">{{.Name}}</li>
+                        {{range .payloadmaster}}
+                          <li>  <a href="https://{{.Name| formatJSONResp}}.dre.dice.se">{{ .Name | formatJSONResp }}<img height="90px"></a>  </li>                  
                         {{end}}
                     </div>
-                    <h2>Jenkins Valid branch for controller {{ .Name }} </h2>
+                    <h2>Perforce branches for {{ .project }} </h2>
                     <div class="form-group">
-                        {{range .payload}}
-                            <li class="list-group-item list-group-item-light">{{ .Name }}</li>
+                        {{range .payloadbranch}}
+                            <li class="list-group-item list-group-item-light">{{ .Name | formatJSONResp }}</li>
                         {{end}}
                     </div>
                 </form>

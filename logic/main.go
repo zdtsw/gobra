@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"html/template"
 )
 
 // global variable definitions
@@ -50,6 +51,11 @@ func main() {
 	}
 
 	r := gin.Default()
+
+	// register some functions
+	r.SetFuncMap(template.FuncMap{
+		"formatJSONResp":formatJSONResp,
+    })
 	
 	r.LoadHTMLGlob("template/**/*")
 	r.RedirectFixedPath = true
