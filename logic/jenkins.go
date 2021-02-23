@@ -15,6 +15,7 @@ const (
 	dstURLFileHead string = "https://gitlab.ea.com/api/v4/projects/1410/repository/files%2Fsrc%2Fproject/"
 	dstURLFolderHead string = "https://gitlab.ea.com/api/v4/projects/1410/repository/tree?path=src/project/"
 	dstURLTail string = "/raw?ref=master"
+	token string = "Bearer txt1Jvx1ywo6LfZ3qndi"
 )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -23,7 +24,7 @@ type dreProject struct {
 	Projshort	string 		`json:"short"`
 	Studio		string		`json:"studio"`
 }
-type gitlabResponseFolder struct {
+type gitlabResponseFolder []struct {
 	ID   string `json:"id"`  // useless field
 	Mode string `json:"mode"` // useless field
 	Name string `json:"name"` // project shortname or filename
@@ -52,37 +53,46 @@ func queryGitlab(path string, isFile bool) ([]byte) {
 	if isFile {
 		endpoint = dstURLFileHead+url.PathEscape(path)+dstURLTail
 	} else {
-		endpoint = dstURLFolderHead+url.PathEscape(path)
+		endpoint = dstURLFolderHead+path
 	}
 	
 	log.Println("WEN--query: " + endpoint)
-	resp, err := http.Get(endpoint); 
+
+	req, err := http.NewRequest("GET", endpoint, nil)
+	req.Header.Add("Authorization", token)
+
+	// resp, err := http.Get(endpoint);
+	client := &http.Client{}
+    resp, err := client.Do(req)
+    
 	if err != nil {
 		errorHandler(err)
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+   	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		errorHandler(err)
 	}
+	log.Println("WEN--RESPONSE:" + string([]byte(body)))
 	return body
 }
 
-func parseJSONResponse(body []byte)(gitlabResponseFolder) {
+func parseJSONResponse(body []byte)(*gitlabResponseFolder) {
 	log.Println("WEN--running: parseJSONResponse()")
-    //var s = new(gitlabResponseFolder)
-	var s gitlabResponseFolder
+	inputs := string(body)
+	fmt.Println(inputs)
+    var s = new(gitlabResponseFolder)
     if err := json.Unmarshal(body, &s); err != nil {
 		errorHandler(err)
 	}
-	fmt.Println(s)
+	fmt.Println(&s)
 	// log.Println("WEN--getting:" + s)
     return s
 }
 
-func getJenkinsMasters(Projshort string) (gitlabResponseFolder) {
-	body := queryGitlab(Projshort+"masterSettings", false)
+func getJenkinsMasters(Projshort string) (*gitlabResponseFolder) {
+	body := queryGitlab(Projshort+"/masterSettings", false)
 	return parseJSONResponse(body)
 }
 
@@ -104,7 +114,7 @@ func jenkinsInstanceHandler(c *gin.Context) {
 	log.Println("Load page in path: " + c.Request.URL.Path)
 	projName := c.Param("proj")
 	allMasters := getJenkinsMasters(projName)
-	log.Println("WEN-DEBIG " + allMasters)
+	//if (gitlabResponseFolder{}) == allMasters  {log.Println("WEN-DEBIG: allMasters is empty, damn it ")}
 
 	c.HTML(http.StatusOK, "jenkins/main.tmpl", gin.H{
 		"version": render.VersionPage,
