@@ -7,7 +7,7 @@ import (
 
 
 
-// functions for "bilbo"
+// module for "bilbo"
 func createBilboHandler (c *gin.Context) {
 	log.Println("Calling: createBilboHandler")
 	log.Println("Load page in path: " + c.Request.URL.Path)

@@ -1,15 +1,11 @@
 package main
-// functions for "jenkins"
+// module for "index page"
 
 import (
 	"log"
 	"net/http"
 	"github.com/gin-gonic/gin"
 )
-
-func initializeRoutes() {
-	r.GET("/", showIndexPage)
-}
 
 func showIndexPage(c *gin.Context){
 	log.Println("HELLO INDEX")

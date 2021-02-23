@@ -16,7 +16,7 @@
                 <p>
                     <ul class="list-group">
                     <li class="list-group-item list-group-item-light">
-                         Here you can get most of the information of our Jenkins services 
+                         Here you can get most of the information of our Jenkins services on project {{ .project }}
                          Please <a href="to_do_our_google_page" target="_blank">read carefully</a> if you have more questions.
                     </li>
                     <li class="list-group-item list-group-item-light">
@@ -28,13 +28,20 @@
 
             <div  class="custom">
                 <form action="/queryJenkins" method="POST">  
-                    <h2>Jenkins Valid branch</h2>
+                    <h2>Jenkins Valid controller for {{ .project }} </h2>
                     <div class="form-group">
-                        <label for="coce"><span>code branch</span><br><input type="radio" id="master" name="branchType[]" value="code" checked></label> 
-                        <label for="data"><span>data branch</span><br><input type="radio" id="image" name="branchType[]" value="data"></label>
+                        {{range .payload}}
+                            <li class="list-group-item list-group-item-light">{{.Name}}</li>
+                        {{end}}
                     </div>
-
-            </form>
+                    <h2>Jenkins Valid branch for controller {{ .Name }} </h2>
+                    <div class="form-group">
+                        {{range .payload}}
+                            <li class="list-group-item list-group-item-light">{{ .Name }}</li>
+                        {{end}}
+                    </div>
+                </form>
+            </div>
         </div>
     </body>
 {{ template "foot.html" .}}

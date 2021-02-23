@@ -5,9 +5,9 @@
 <body>
     <div>
         <form>
-          {{range .payload }}
+          {{range .payload}}
             <li class="list-group-item list-group-item-light">
-                <a href="/jenkins/project/{{.Project}}">Project {{.Project}}<img height="90px"  alt="{{.Project}}"></a>
+                <a href="/jenkins/project/{{ .Projshort }}">Project {{ .Project }}<img height="90px"  alt="{{ .Project }}"></a>
             </li>
           {{end}}
         </form>
