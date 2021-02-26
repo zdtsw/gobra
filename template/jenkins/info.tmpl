@@ -2,17 +2,17 @@
 
 {{ template "head.html" .}}
 
-<body>
-    <div>
-        <form>
-          {{range .payload}}
-            <li class="list-group-item list-group-item-light">
-                <a href="/jenkins/project/{{ .Projshort }}">Project {{ .Project }}<img height="90px"  alt="{{ .Project }}"></a>
-            </li>
-          {{end}}
-        </form>
-    </div>
-</body>
+    <body>
+        <div>
+            <form>
+            {{range .payload}}
+                <li class="list-group-item list-group-item-light">
+                    <a href="/jenkins/project/{{ .Projshort }}">Project {{ .Project }}<img height="90px"  alt="{{ .Project }}"></a>
+                </li>
+            {{end}}
+            </form>
+        </div>
+    </body>
 
 {{ template "foot.html" .}}
 {{ end }}

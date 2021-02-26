@@ -2,13 +2,13 @@ package main
 // module for "index page"
 
 import (
-	"log"
+	//log"
 	"net/http"
 	"github.com/gin-gonic/gin"
 )
 
 func showIndexPage(c *gin.Context){
-	log.Println("HELLO INDEX")
+	//log.Println("HELLO INDEX")
 	c.HTML(http.StatusOK, "index.html", gin.H {
 		"version": version,
 		"author": author,

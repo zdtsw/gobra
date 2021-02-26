@@ -1,33 +1,30 @@
 
 {{ template "head.html" .}}
-<body>
-    <div style="padding: 1rem 1rem; margin-bottom:0;background: #181818;color: #ffffff;">
-        <img height="100px" src="/img/Logo_White.png" style="float:left;margin-top: -25px;">
-        <h1 style="font-family: 'Sans-Medium';font-weight:600;">{{.title}}</h1>
-    </div>
-    <div style="font-family: 'Sans-Light'; float:right;margin-right:10px;font-size: small">Version: <span id="version">{{ .version }}</span></div>
-    <div class="container" style="font-family: 'Sans-Regular';">
-        <div class="row">
-            <div class="col-sm-1">&nbsp;</div>
-            <div class="col-sm-10">    
-            <div style="margin-top:5px;">
-        </div>
-        <div>
-            <form>  
-                <ul class="list-group">
-                    <li class="list-group-item list-group-item-light">
-                        <a href="type/k8s">Kubernetes(K8s) pipeline generator<img height="90px"  alt="K8s" src="/img/k8s.png"></a>
-                    </li>
-               
-                    <li class="list-group-item list-group-item-light">
-                        <a href="type/j2">Jenkins2.X (J2) pipeline generator<img height="90px"  alt="J2" src="/img/jenkins2.jpg"></a>
-                    </li>
+
+    <body>
+        <div class="container" style="font-family: 'Sans-Regular';">
+            <div class="row">
+                <div class="col-sm-1">&nbsp;</div>
+                <div class="col-sm-10">    
+                <div style="margin-top:5px;">
+            </div>
+            <div>
+                <form>  
+                    <ul class="list-group">
+                        <li class="list-group-item list-group-item-light">
+                            <a href="jenkins/info">DRE Cobra Jenkins collection<img height="90px" src="jenkins2.jpg"></a>
+                        </li>
                 
-                    <li class="list-group-item list-group-item-light">
-                        <a href="type/iac">Infrastructure As Code(IaC) pipeline generator<img height="90px"  alt="IaC" src="/img/ansible.png"></a>
-                    </li>
-                </ul>           
-            </form>
-        </div>
-</body>
+                        <li class="list-group-item list-group-item-light">
+                            <a href="bilbo/routertobe">DRE Cobra Bilbo(Elasticsearch) collection<img height="90px" src="img/bilbo.svg"></a>
+                        </li>
+                    
+                        <li class="list-group-item list-group-item-light">
+                            <a href="k8s/servicelist">DRE Cobra Kubernetes service list<img height="90px" src="html/kubernets.svg"></a>
+                        </li>
+                    </ul>           
+                </form>
+            </div>
+    </body>
+
 {{ template "foot.html" .}}

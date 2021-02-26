@@ -8,10 +8,11 @@ import (
 
 // global variable definitions
 var (
-		version string = "Wen"
-		author string = "Zhou"
+		version string = "beta"
+		author string = "WenZhou"
 		project string
 		release bool
+		esIndex string = "bilbo"
 		r *gin.Engine
 )
 
@@ -26,6 +27,7 @@ var render = pageFiller{
 	ContactAuthor: author,
 	EAProject: project,
 }
+
 
 func renderResponse(c *gin.Context, data gin.H, tmplFile string) {
 	switch c.Request.Header.Get("Accept") {
@@ -65,8 +67,9 @@ func main() {
 
 	bilbo := r.Group("/bilbo")
 	{
-		bilbo.PUT("/create", createBilboHandler)
-		bilbo.POST("/update", updateBilboHandler)
+		bilbo.GET("/", healthBilboHandler)
+		bilbo.GET("/create", createBilboHandler)  
+		bilbo.GET("/update", updateBilboHandler)
 		bilbo.GET("/query", queryBilboHandler)
 	}
 	jenkins := r.Group("/jenkins")
@@ -76,7 +79,8 @@ func main() {
 	}
 	k8s := r.Group("/k8s")
 	{
-		k8s.GET("/:action", createServiceHandler)
+		k8s.GET("/list", listServiceHandler)
+		k8s.GET("/action/:action", createServiceHandler)
 	}
 
 	r.Run(":8888")

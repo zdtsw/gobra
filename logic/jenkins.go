@@ -27,11 +27,11 @@ type dreProject struct {
 	Studio		string		`json:"studio"`
 }
 type gitlabResponseFolder []struct {
-	ID   string `json:"id"`  // useless field
-	Mode string `json:"mode"` // useless field
+	//ID   string `json:"id"`  // useless field comment out
+	// Mode string `json:"mode"` // useless field comment out
 	Name string `json:"name"` // project shortname or filename
 	Type string `json:"type"`  // blob;folder
-	Path string `json:"path"`  // e.g src/project/dun/
+	// Path string `json:"path"`  // e.g src/project/dun/ useless comment out
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -58,7 +58,7 @@ func queryGitlab(path string, isFile bool) ([]byte) {
 		endpoint = dstURLFolderHead+path
 	}
 	
-	log.Println("WEN--query: " + endpoint)
+	// log.Println("WEN--query: " + endpoint)
 
 	req, err := http.NewRequest("GET", endpoint, nil)
 	req.Header.Add("Authorization", token)
@@ -76,19 +76,19 @@ func queryGitlab(path string, isFile bool) ([]byte) {
 	if err != nil {
 		errorHandler(err)
 	}
-	log.Println("WEN--RESPONSE:" + string([]byte(body)))
+//	log.Println("WEN--RESPONSE:" + string([]byte(body)))
 	return body
 }
 
 func parseJSONResponse(body []byte)(*gitlabResponseFolder) {
-	log.Println("WEN--running: parseJSONResponse()")
+//	log.Println("WEN--running: parseJSONResponse()")
 	inputs := string(body)
 	fmt.Println(inputs)
     var s = new(gitlabResponseFolder)
     if err := json.Unmarshal(body, &s); err != nil {
 		errorHandler(err)
 	}
-	fmt.Println(&s)
+//	fmt.Println(&s)
     return s
 }
 
@@ -131,12 +131,18 @@ func jenkinsInstanceHandler(c *gin.Context) {
 	allBranches := getJenkinsBranches(projName)
 	//if (gitlabResponseFolder{}) == allMasters  {log.Println("WEN-DEBIG: allMasters is empty, damn it ")}
 
-	c.HTML(http.StatusOK, "jenkins/main.tmpl", gin.H{
-		"version": render.VersionPage,
-		"author":  render.ContactAuthor,
-		"project": projName,
-		"payloadmaster": allMasters,
-		"payloadbranch": allBranches,
-
-	})
+	// c.HTML(http.StatusOK, "jenkins/main.tmpl", gin.H{
+	// 	"version": render.VersionPage,
+	// 	"author":  render.ContactAuthor,
+	// 	"project": projName,
+	// 	"payloadmaster": allMasters,
+	// 	"payloadbranch": allBranches,
+	//})
+	renderResponse(c, gin.H{
+			"payloadmaster": allMasters,
+			"payloadbranch": allBranches,
+			"version": render.VersionPage,
+			"author":  render.ContactAuthor,
+			"project": projName,
+			},"jenkins/main.tmpl")
 }
