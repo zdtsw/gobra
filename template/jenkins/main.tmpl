@@ -7,15 +7,21 @@
             <div  class="custom">
                 <form action="/queryJenkins" method="POST">  
                     <h2>Jenkins Masters for {{ .project }} </h2>
-                    <div class="form-group">
+                    <!--div class="form-group">
                         {{range .payloadmaster}}
-                          <li>  <a href="https://{{.Name| formatJSONResp}}.dre.dice.se">{{ .Name | formatJSONResp }}<img height="90px"></a>  </li>                  
+                          <li>  {{ .Name | convertFileJSONResp }}</li>    
+                        {{end}}
+                    </div-->
+                    <div class="form-group">
+                        {{range .payloaddcos}}
+                          <li>  <a href="{{ .URL }}">{{ .Host }}<img height="90px"></a>  </ li>
                         {{end}}
                     </div>
+
                     <h2>Perforce branches for {{ .project }} </h2>
                     <div class="form-group">
                         {{range .payloadbranch}}
-                            <li class="list-group-item list-group-item-light">{{ .Name | formatJSONResp }}</li>
+                            <li class="list-group-item list-group-item-light">{{ .Name | convertFileJSONResp }}</li>
                         {{end}}
                     </div>
                 </form>
@@ -24,4 +30,5 @@
     </body>
 
 {{ template "foot.tmpl" .}}
+
 {{ end }}

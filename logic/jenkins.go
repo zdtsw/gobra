@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"io/ioutil"
 	"encoding/json"
-	"fmt"
+	//"fmt"
 	"strings"
 
 )
@@ -34,6 +34,38 @@ type gitlabResponseFolder []struct {
 	// Path string `json:"path"`  // e.g src/project/dun/ useless comment out
 }
 
+
+type appResponse struct {
+	Apps []struct {
+		ID             string  `json:"id"`
+		Container      struct {
+			Docker struct {
+				Image          string `json:"image"`
+				Parameters     []struct {
+					Key   string `json:"key"`
+					Value string `json:"value"`
+				} `json:"parameters"`
+			} `json:"docker"`
+		} `json:"container"`
+		Env  struct {
+			JAVAOPTS              string `json:"JAVA_OPTS"`
+			PROJECTSEEDROOT       string `json:"PROJECT_SEED_ROOT"`
+		} `json:"env"`
+		Labels    struct {
+			SEEDROOT       string `json:"SEED_ROOT"`
+			JENKINSURL     string `json:"JENKINS_URL"`
+			IsTest  	 string `json:"IS_TEST_INSTANCE"`
+		} `json:"labels"`
+	} `json:"apps"`
+}
+
+type returnAppResp struct {
+	Host string
+	URL  string
+	Proj string
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 var allProjects = []dreProject{
 	{Project: "Kingston", 			Projshort: "kin", 	Studio: "DICE"},
@@ -50,6 +82,22 @@ func getAllProjects() []dreProject {
 	return allProjects
 }
 
+/////////////////////////////////////////////DCOS functions /////////////////////////////////////////////////
+func queryDCOS(appid string)([]byte){
+	endpoint := "http://admin-thor.dice.se:8080/v2/apps?id="+appid+"&label=HAPROXY_GROUP&embed=apps.count"
+	resp, err := http.Get(endpoint)
+	if err != nil {
+		errorHandler(err)
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		errorHandler(err)
+	}
+	return body
+}
+
+/////////////////////////////////////////////GitLab functions///////////////////////////////////////////////////
 func queryGitlab(path string, isFile bool) ([]byte) {
 	var endpoint string
 	if isFile {
@@ -80,10 +128,11 @@ func queryGitlab(path string, isFile bool) ([]byte) {
 	return body
 }
 
-func parseJSONResponse(body []byte)(*gitlabResponseFolder) {
+
+//////////////////////////////////JSON functins/////////////////////////////////////
+func parsegitlabJSONResponse(body []byte)(*gitlabResponseFolder) {
 //	log.Println("WEN--running: parseJSONResponse()")
-	inputs := string(body)
-	fmt.Println(inputs)
+	//fmt.Println(string(body))
     var s = new(gitlabResponseFolder)
     if err := json.Unmarshal(body, &s); err != nil {
 		errorHandler(err)
@@ -92,21 +141,47 @@ func parseJSONResponse(body []byte)(*gitlabResponseFolder) {
     return s
 }
 
+func parseDCOSJSONResponse(body []byte, projShort string)([]returnAppResp){
+	var s appResponse
+	var n []returnAppResp
+	if err := json.Unmarshal(body, &s); err != nil {
+		errorHandler(err)
+	} 
+	for _,app := range s.Apps {
+		if (app.Container.Docker.Image == "registry.gitlab.ea.com/dreeu/docker-jenkins-oss:latest") {
+			for _, pValue := range app.Container.Docker.Parameters {
+				if ((pValue.Key == "hostname") && (strings.Contains(pValue.Value, projShort)) && (app.Labels.IsTest != "true") ) {
+					n = append(n, returnAppResp{Host:pValue.Value, URL:app.Labels.JENKINSURL, Proj:projShort })
+					continue
+				}
+			}
+		}
+	}
+	//fmt.Println(n)
+	return n
+}
+
+
 func getJenkinsMasters(Projshort string) (*gitlabResponseFolder) {
-	body := queryGitlab(Projshort+"/masterSettings", false)
-	return parseJSONResponse(body)
+	jsonBody := queryGitlab(Projshort+"/masterSettings", false)
+	return parsegitlabJSONResponse(jsonBody)
 }
 
 func getJenkinsBranches(Projshort string) (*gitlabResponseFolder) {
-	body := queryGitlab(Projshort+"/branchSettings", false)
-	return parseJSONResponse(body)
+	jsonBody := queryGitlab(Projshort+"/branchSettings", false)
+	return parsegitlabJSONResponse(jsonBody)
 }
 
+func getJenkinsMasterURL(Projshort string) ([]returnAppResp) {
+	jsonBody := queryDCOS("jenkins")
+	//fmt.Println(string(jsonBody))
+	return parseDCOSJSONResponse(jsonBody,Projshort)
+}
 
 /////////////////////////////template function//////////////////////////
-func formatJSONResp(n string) string {
-	return strings.Split(n, ".")[0]
-	
+/* convert return item from gitlab folder by strip file sufix and convert to lowercase*/
+func convertFileJSONResp(n string) string {
+	return strings.ToLower(strings.Split(n, ".")[0])
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -127,8 +202,9 @@ func jenkinsInstanceHandler(c *gin.Context) {
 	log.Println("Calling: jenkinsMainHandler")
 	log.Println("Load page in path: " + c.Request.URL.Path)
 	projName := c.Param("proj")
-	allMasters := getJenkinsMasters(projName)
+	//allMasters := getJenkinsMasters(projName)
 	allBranches := getJenkinsBranches(projName)
+	allDCOS := getJenkinsMasterURL(projName)
 	//if (gitlabResponseFolder{}) == allMasters  {log.Println("WEN-DEBIG: allMasters is empty, damn it ")}
 
 	// c.HTML(http.StatusOK, "jenkins/main.tmpl", gin.H{
@@ -139,8 +215,9 @@ func jenkinsInstanceHandler(c *gin.Context) {
 	// 	"payloadbranch": allBranches,
 	//})
 	renderResponse(c, gin.H{
-			"payloadmaster": allMasters,
+			//"payloadmaster": allMasters,
 			"payloadbranch": allBranches,
+			"payloaddcos": allDCOS,
 			"version": render.VersionPage,
 			"author":  render.ContactAuthor,
 			"project": projName,
