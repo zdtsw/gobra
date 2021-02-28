@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/contrib/static"
 	"net/http"
 	"html/template"
 )
@@ -59,7 +60,9 @@ func main() {
 		"formatJSONResp":formatJSONResp,
     })
 	
-	r.LoadHTMLGlob("template/**/*")
+	r.LoadHTMLGlob("template/**/*.tmpl")
+	r.Use(static.Serve("/img", static.LocalFile("./html/img", true)))
+	// r.Use(static.Serve("/css", static.LocalFile("./html/css", true)))
 	r.RedirectFixedPath = true
 	r.RedirectTrailingSlash = true	
 
