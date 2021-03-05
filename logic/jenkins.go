@@ -1,80 +1,78 @@
 package main
+
 // module for "jenkins"
 
 import (
-	"log"
+	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
-	"io/ioutil"
-	"encoding/json"
 	//"fmt"
 	"strings"
-
 )
 
 const (
-	dstURLFileHead string = "https://gitlab.ea.com/api/v4/projects/1410/repository/files%2Fsrc%2Fproject/"
+	dstURLFileHead   string = "https://gitlab.ea.com/api/v4/projects/1410/repository/files%2Fsrc%2Fproject/"
 	dstURLFolderHead string = "https://gitlab.ea.com/api/v4/projects/1410/repository/tree?path=src/project/"
-	dstURLTail string = "/raw?ref=master"
-	token string = "Bearer txt1Jvx1ywo6LfZ3qndi"
+	dstURLTail       string = "/raw?ref=master"
+	token            string = "Bearer txt1Jvx1ywo6LfZ3qndi"
 )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 type dreProject struct {
-	Project  	string   	`json:"project"`
-	Projshort	string 		`json:"short"`
-	Studio		string		`json:"studio"`
+	Project   string `json:"project"`
+	Projshort string `json:"short"`
+	Studio    string `json:"studio"`
 }
 type gitlabResponseFolder []struct {
 	//ID   string `json:"id"`  // useless field comment out
 	// Mode string `json:"mode"` // useless field comment out
 	Name string `json:"name"` // project shortname or filename
-	Type string `json:"type"`  // blob;folder
+	Type string `json:"type"` // blob;folder
 	// Path string `json:"path"`  // e.g src/project/dun/ useless comment out
 }
 
-
 type appResponse struct {
 	Apps []struct {
-		ID             string  `json:"id"`
-		Container      struct {
+		ID        string `json:"id"`
+		Container struct {
 			Docker struct {
-				Image          string `json:"image"`
-				Parameters     []struct {
+				Image      string `json:"image"`
+				Parameters []struct {
 					Key   string `json:"key"`
 					Value string `json:"value"`
 				} `json:"parameters"`
 			} `json:"docker"`
 		} `json:"container"`
-		Env  struct {
-			JAVAOPTS              string `json:"JAVA_OPTS"`
-			PROJECTSEEDROOT       string `json:"PROJECT_SEED_ROOT"`
+		Env struct {
+			JAVAOPTS        string `json:"JAVA_OPTS"`
+			PROJECTSEEDROOT string `json:"PROJECT_SEED_ROOT"`
 		} `json:"env"`
-		Labels    struct {
-			SEEDROOT       string `json:"SEED_ROOT"`
-			JENKINSURL     string `json:"JENKINS_URL"`
-			IsTest  	 string `json:"IS_TEST_INSTANCE"`
+		Labels struct {
+			SEEDROOT   string `json:"SEED_ROOT"`
+			JENKINSURL string `json:"JENKINS_URL"`
+			IsTest     string `json:"IS_TEST_INSTANCE"`
 		} `json:"labels"`
 	} `json:"apps"`
 }
 
 type returnAppResp struct {
-	Host string
-	URL  string
-	Proj string
+	Host    string
+	URL     string
+	Project string
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 var allProjects = []dreProject{
-	{Project: "Kingston", 			Projshort: "kin", 	Studio: "DICE"},
-	{Project: "Walrus", 			Projshort: "wal",	Studio: "DICE"},
-	{Project: "Casablanca", 		Projshort: "cas",	Studio: "DICE"},
-	{Project: "DiceUpgradeNext", 	Projshort: "dun",	Studio: "DICE"},
-	{Project: "FB1", 				Projshort: "fb1",	Studio: "Frostbite"},
-	{Project: "FB2021", 			Projshort: "fb2021",Studio: "Frostbite"},
-	{Project: "Excalibur", 			Projshort: "exc", 	Studio: "Critiron"},
+	{Project: "Kingston", Projshort: "kin", Studio: "DICE"},
+	{Project: "Walrus", Projshort: "wal", Studio: "DICE"},
+	{Project: "Casablanca", Projshort: "cas", Studio: "DICE"},
+	{Project: "DiceUpgradeNext", Projshort: "dun", Studio: "DICE"},
+	{Project: "FB1", Projshort: "fb1", Studio: "Frostbite"},
+	{Project: "FB2021", Projshort: "fb2021", Studio: "Frostbite"},
+	{Project: "Excalibur", Projshort: "exc", Studio: "Critiron"},
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,8 +81,8 @@ func getAllProjects() []dreProject {
 }
 
 /////////////////////////////////////////////DCOS functions /////////////////////////////////////////////////
-func queryDCOS(appid string)([]byte){
-	endpoint := "http://admin-thor.dice.se:8080/v2/apps?id="+appid+"&label=HAPROXY_GROUP&embed=apps.count"
+func queryDCOS(appid string) []byte {
+	endpoint := "http://admin-thor.dice.se:8080/v2/apps?id=" + appid + "&label=HAPROXY_GROUP&embed=apps.count"
 	resp, err := http.Get(endpoint)
 	if err != nil {
 		errorHandler(err)
@@ -98,14 +96,14 @@ func queryDCOS(appid string)([]byte){
 }
 
 /////////////////////////////////////////////GitLab functions///////////////////////////////////////////////////
-func queryGitlab(path string, isFile bool) ([]byte) {
+func queryGitlab(path string, isFile bool) []byte {
 	var endpoint string
 	if isFile {
-		endpoint = dstURLFileHead+url.PathEscape(path)+dstURLTail
+		endpoint = dstURLFileHead + url.PathEscape(path) + dstURLTail
 	} else {
-		endpoint = dstURLFolderHead+path
+		endpoint = dstURLFolderHead + path
 	}
-	
+
 	// log.Println("WEN--query: " + endpoint)
 
 	req, err := http.NewRequest("GET", endpoint, nil)
@@ -113,45 +111,44 @@ func queryGitlab(path string, isFile bool) ([]byte) {
 
 	// resp, err := http.Get(endpoint); if we do not need token, this should be enough
 	client := &http.Client{}
-    resp, err := client.Do(req)
-    
+	resp, err := client.Do(req)
+
 	if err != nil {
 		errorHandler(err)
 	}
 	defer resp.Body.Close()
 
-   	body, err := ioutil.ReadAll(resp.Body)
+	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		errorHandler(err)
 	}
-//	log.Println("WEN--RESPONSE:" + string([]byte(body)))
+	//	log.Println("WEN--RESPONSE:" + string([]byte(body)))
 	return body
 }
 
-
 //////////////////////////////////JSON functins/////////////////////////////////////
-func parsegitlabJSONResponse(body []byte)(*gitlabResponseFolder) {
-//	log.Println("WEN--running: parseJSONResponse()")
+func parsegitlabJSONResponse(body []byte) *gitlabResponseFolder {
+	//	log.Println("WEN--running: parseJSONResponse()")
 	//fmt.Println(string(body))
-    var s = new(gitlabResponseFolder)
-    if err := json.Unmarshal(body, &s); err != nil {
+	var gr = new(gitlabResponseFolder)
+	if err := json.Unmarshal(body, &gr); err != nil {
 		errorHandler(err)
 	}
-//	fmt.Println(&s)
-    return s
+	//	fmt.Println(&s)
+	return gr
 }
 
-func parseDCOSJSONResponse(body []byte, projShort string)([]returnAppResp){
-	var s appResponse
+func parseDCOSJSONResponse(body []byte, projShort string) []returnAppResp {
+	var ar appResponse
 	var n []returnAppResp
-	if err := json.Unmarshal(body, &s); err != nil {
+	if err := json.Unmarshal(body, &ar); err != nil {
 		errorHandler(err)
-	} 
-	for _,app := range s.Apps {
-		if (app.Container.Docker.Image == "registry.gitlab.ea.com/dreeu/docker-jenkins-oss:latest") {
+	}
+	for _, app := range ar.Apps {
+		if app.Container.Docker.Image == "registry.gitlab.ea.com/dreeu/docker-jenkins-oss:latest" {
 			for _, pValue := range app.Container.Docker.Parameters {
-				if ((pValue.Key == "hostname") && (strings.Contains(pValue.Value, projShort)) && (app.Labels.IsTest != "true") ) {
-					n = append(n, returnAppResp{Host:pValue.Value, URL:app.Labels.JENKINSURL, Proj:projShort })
+				if (pValue.Key == "hostname") && (strings.Contains(pValue.Value, projShort)) && (app.Labels.IsTest != "true") {
+					n = append(n, returnAppResp{Host: pValue.Value, URL: app.Labels.JENKINSURL, Project: projShort})
 					continue
 				}
 			}
@@ -161,21 +158,20 @@ func parseDCOSJSONResponse(body []byte, projShort string)([]returnAppResp){
 	return n
 }
 
-
-func getJenkinsMasters(Projshort string) (*gitlabResponseFolder) {
+func getJenkinsMasters(Projshort string) *gitlabResponseFolder {
 	jsonBody := queryGitlab(Projshort+"/masterSettings", false)
 	return parsegitlabJSONResponse(jsonBody)
 }
 
-func getJenkinsBranches(Projshort string) (*gitlabResponseFolder) {
+func getJenkinsBranches(Projshort string) *gitlabResponseFolder {
 	jsonBody := queryGitlab(Projshort+"/branchSettings", false)
 	return parsegitlabJSONResponse(jsonBody)
 }
 
-func getJenkinsMasterURL(Projshort string) ([]returnAppResp) {
+func getJenkinsMasterURL(Projshort string) []returnAppResp {
 	jsonBody := queryDCOS("jenkins")
 	//fmt.Println(string(jsonBody))
-	return parseDCOSJSONResponse(jsonBody,Projshort)
+	return parseDCOSJSONResponse(jsonBody, Projshort)
 }
 
 /////////////////////////////template function//////////////////////////
@@ -191,10 +187,10 @@ func projectInfoHandler(c *gin.Context) {
 	log.Println("Load page in path: " + c.Request.URL.Path)
 	allProjects := getAllProjects()
 	renderResponse(c, gin.H{
-					"payload": allProjects,  //on json or xml response can retrieve more info than html 
-					"version": render.VersionPage,
-					"author": render.ContactAuthor,
-	  				},"jenkins/info.tmpl")	
+		"payload": allProjects, //on json or xml response can retrieve more info than html
+		"version": render.VersionPage,
+		"author":  render.ContactAuthor,
+	}, "jenkins/info.tmpl")
 }
 
 // routine functions for /jenkins/project/:proj
@@ -215,11 +211,11 @@ func jenkinsInstanceHandler(c *gin.Context) {
 	// 	"payloadbranch": allBranches,
 	//})
 	renderResponse(c, gin.H{
-			//"payloadmaster": allMasters,
-			"payloadbranch": allBranches,
-			"payloaddcos": allDCOS,
-			"version": render.VersionPage,
-			"author":  render.ContactAuthor,
-			"project": projName,
-			},"jenkins/main.tmpl")
+		//"payloadmaster": allMasters,
+		"payloadbranch": allBranches,
+		"payloaddcos":   allDCOS,
+		"version":       render.VersionPage,
+		"author":        render.ContactAuthor,
+		"project":       projName,
+	}, "jenkins/main.tmpl")
 }

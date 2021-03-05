@@ -1,17 +1,18 @@
 package main
+
 // module for "index page"
 
 import (
 	//log"
-	"net/http"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
-func showIndexPage(c *gin.Context){
+func showIndexPage(c *gin.Context) {
 	//log.Println("HELLO INDEX")
-	c.HTML(http.StatusOK, "index.tmpl", gin.H {
+	c.HTML(http.StatusOK, "index.tmpl", gin.H{
 		"version": version,
-		"author": author,
-		"title": "Welcome to the Love Of Gobra",
+		"author":  author,
+		"title":   "Welcome to the Love Of Gobra",
 	})
 }
