@@ -4,13 +4,15 @@
  <body>
     <div class="container" style="font-family: 'Sans-Regular';">
         <div  class="custom">
-            <h2>{{ .project }} Bilbo realtime information:</h2>
-            <div class="form-group">
-                    <li>ClusterName: {{ .payloadBilboHealth.ClusterName }}<img height="90px"></li>
-                    <li>Current Status: {{ .payloadBilboHealth.Status }}<img height="90px"></li>
-                    <li>Total number of nodes: {{ .payloadBilboHealth.NumberOfNodes }}<img height="90px"></li>
-                    <li>Total number of data nodes: {{ .payloadBilboHealth.NumberOfDataNodes }}<img height="90px"></li>
-            </div>         
+            {{range .bilboSummary}}
+                <h2>Bilbo realtime information:<img height="90px"></h2>
+                <div class="form-group">
+                        <li>ClusterName: {{ .ClusterName }}</li>
+                        <li>Current Status: {{ .Status }}</li>
+                        <li>Total number of nodes: {{ .NumberOfNodes }}</li>
+                </div>  
+            {{ end }}
+  
         </div>
     </div>
 </body>

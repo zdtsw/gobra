@@ -49,11 +49,12 @@ type appResponse struct {
 		Env struct {
 			JAVAOPTS        string `json:"JAVA_OPTS"`
 			PROJECTSEEDROOT string `json:"PROJECT_SEED_ROOT"`
+			NAME            string `json:"CLUSTER_NAME"`
 		} `json:"env"`
 		Labels struct {
-			SEEDROOT   string `json:"SEED_ROOT"`
-			JENKINSURL string `json:"JENKINS_URL"`
-			IsTest     string `json:"IS_TEST_INSTANCE"`
+			SEEDROOT string `json:"SEED_ROOT"`
+			IsTest   string `json:"IS_TEST_INSTANCE"`
+			VHOST    string `json:"HAPROXY_0_VHOST"`
 		} `json:"labels"`
 	} `json:"apps"`
 }
@@ -78,21 +79,6 @@ var allProjects = []dreProject{
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 func getAllProjects() []dreProject {
 	return allProjects
-}
-
-/////////////////////////////////////////////DCOS functions /////////////////////////////////////////////////
-func queryDCOS(appid string) []byte {
-	endpoint := "http://admin-thor.dice.se:8080/v2/apps?id=" + appid + "&label=HAPROXY_GROUP&embed=apps.count"
-	resp, err := http.Get(endpoint)
-	if err != nil {
-		errorHandler(err)
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		errorHandler(err)
-	}
-	return body
 }
 
 /////////////////////////////////////////////GitLab functions///////////////////////////////////////////////////
@@ -138,26 +124,6 @@ func parsegitlabJSONResponse(body []byte) *gitlabResponseFolder {
 	return gr
 }
 
-func parseDCOSJSONResponse(body []byte, projShort string) []returnAppResp {
-	var ar appResponse
-	var n []returnAppResp
-	if err := json.Unmarshal(body, &ar); err != nil {
-		errorHandler(err)
-	}
-	for _, app := range ar.Apps {
-		if app.Container.Docker.Image == "registry.gitlab.ea.com/dreeu/docker-jenkins-oss:latest" {
-			for _, pValue := range app.Container.Docker.Parameters {
-				if (pValue.Key == "hostname") && (strings.Contains(pValue.Value, projShort)) && (app.Labels.IsTest != "true") {
-					n = append(n, returnAppResp{Host: pValue.Value, URL: app.Labels.JENKINSURL, Project: projShort})
-					continue
-				}
-			}
-		}
-	}
-	//fmt.Println(n)
-	return n
-}
-
 func getJenkinsMasters(Projshort string) *gitlabResponseFolder {
 	jsonBody := queryGitlab(Projshort+"/masterSettings", false)
 	return parsegitlabJSONResponse(jsonBody)
@@ -171,7 +137,7 @@ func getJenkinsBranches(Projshort string) *gitlabResponseFolder {
 func getJenkinsMasterURL(Projshort string) []returnAppResp {
 	jsonBody := queryDCOS("jenkins")
 	//fmt.Println(string(jsonBody))
-	return parseDCOSJSONResponse(jsonBody, Projshort)
+	return parseDCOSJSONResponse(jsonBody, "jenkins", Projshort)
 }
 
 /////////////////////////////template function//////////////////////////

@@ -7,14 +7,9 @@
             <div  class="custom">
                 <form action="/queryJenkins" method="POST">  
                     <h2>Jenkins Masters for {{ .project }} </h2>
-                    <!--div class="form-group">
-                        {{range .payloadmaster}}
-                          <li>  {{ .Name | convertFileJSONResp }}</li>    
-                        {{end}}
-                    </div-->
                     <div class="form-group">
                         {{range .payloaddcos}}
-                          <li>  <a href="{{ .URL }}">{{ .Host }}<img height="90px"></a></li>
+                          <li> <a href="https://{{ .URL }}">{{ .Host }}</a></li>
                         {{end}}
                     </div>
 

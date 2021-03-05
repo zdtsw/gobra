@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	//es6api "github.com/elastic/go-elasticsearch/v6/esapi"
+	//"fmt"
 )
 
 var bilbofqdn = "bilbo-fb1.dre.dice.se"
@@ -105,30 +106,35 @@ func queryBilboHandler(c *gin.Context) {
 func healthBilboHandler(c *gin.Context) {
 	log.Println("Calling: healthBilboHandler")
 	log.Println("Load page in path: " + c.Request.URL.Path)
-	projName := "kin"
-	endpoint := "http://bilbo-" + projName + ".dre.dice.se/_cluster/health?pretty"
-	resp, err := http.Get(endpoint)
-	if err != nil {
-		errorHandler(err)
-	}
-	defer resp.Body.Close()
-	if body, err := ioutil.ReadAll(resp.Body); err != nil {
-		errorHandler(err)
-	} else {
-		var healthy healthResp
-		if err := json.Unmarshal(body, &healthy); err != nil {
+	jsonBody := queryDCOS("bilbo/") // to exclude bilbo-ui
+	//Projshort := "kin"
+	result := parseDCOSJSONResponse(jsonBody, "bilbo", "")
+
+	//fmt.Println(string(jsonBody))
+	var summary []healthResp
+	var healthy healthResp
+	for _, bilboInstance := range result {
+		endpoint := "http://" + bilboInstance.URL + "/_cluster/health?pretty"
+		resp, err := http.Get(endpoint)
+		if err != nil {
 			errorHandler(err)
 		}
-		renderResponse(c, gin.H{
-			"payloadBilboHealth": healthy,
-			"version":            render.VersionPage,
-			"author":             render.ContactAuthor,
-			"project":            projName,
-		}, "bilbo/health.tmpl")
-
+		defer resp.Body.Close()
+		if body, err := ioutil.ReadAll(resp.Body); err != nil {
+			errorHandler(err)
+		} else {
+			if err := json.Unmarshal(body, &healthy); err != nil {
+				errorHandler(err)
+			}
+			summary = append(summary, healthResp{ClusterName: healthy.ClusterName, Status: healthy.Status, NumberOfNodes: healthy.NumberOfNodes})
+		}
 	}
-
-	// curl -u elastic:(password)  -H 'Content-Type: application/json' -XGET https://locahost:9243/_cluster/health?pretty healthy check
+	//fmt.Println(summary)
+	renderResponse(c, gin.H{
+		"bilboSummary": summary,
+		"version":      render.VersionPage,
+		"author":       render.ContactAuthor,
+	}, "bilbo/health.tmpl")
 }
 
 func initES() *es6.Client {
