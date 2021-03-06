@@ -1,18 +1,22 @@
 {{ define "jenkins/info.tmpl" }}
 
+<!-- Header -->
 {{ template "head.tmpl" .}}
 
-    <body>
-        <div>
-            <form>
-            {{range .payload}}
-                <li class="list-group-item list-group-item-light">
-                    <a href="/jenkins/project/{{ .Projshort }}">Project {{ .Project }}<img height="50px"  alt="{{ .Project }}"></a>
-                </li>
-            {{end}}
-            </form>
-        </div>
-    </body>
+{{range .payload}}
+    <div class="w3-container w3-padding-small">
+        <h3>  <a href="/jenkins/project/{{ .Projshort }}">{{ .Project }} </a> </h3>
+        
+        <div class="w3-container" style="font-family: 'Open Sans', sans-serif;" id="section">
+            <p> <li>short name: {{ .Projshort }}</li> </p> 
+            <p> <li>Studio: {{ .Studio }}</li> </p>
+            <p> <li>Google Site: </li> </p>
+            <p> <li>dashboard: </li> </p>
+        </div>             
+    </div>
+{{end}}
 
+<!-- Footer -->
 {{ template "foot.tmpl" .}}
+
 {{ end }}

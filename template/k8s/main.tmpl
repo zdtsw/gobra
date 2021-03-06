@@ -1,27 +1,26 @@
 {{ define "k8s/main.tmpl" }}
+
+<!-- Header -->
 {{ template "head.tmpl" .}}
 
- <body>
+<div class="w3-container">
+    <h2>Jenkins Masters for {{ .project }} </h2>
+    <div class="form-group">
+        {{range .payloadmaster}}
+            <li>  <a href="https://{{.Name| convertFileJSONResp}}.dre.dice.se">{{ .Name | convertFileJSONResp }}<img height="90px"></a>  </li> 
+        {{end}}
+    </div>
 
-        <div class="container" style="font-family: 'Sans-Regular';">
-            <div  class="custom">
-                <form action="/queryJenkins" method="POST">  
-                    <h2>Jenkins Masters for {{ .project }} </h2>
-                    <div class="form-group">
-                        {{range .payloadmaster}}
-                          <li>  <a href="https://{{.Name| convertFileJSONResp}}.dre.dice.se">{{ .Name | convertFileJSONResp }}<img height="90px"></a>  </li> 
-                        {{end}}
-                    </div>
-                    <h2>Perforce branches for {{ .project }} </h2>
-                    <div class="form-group">
-                        {{range .payloadbranch}}
-                            <li class="list-group-item list-group-item-light">{{ .Name | convertFileJSONResp }}</li>
-                        {{end}}
-                    </div>
-                </form>
-            </div>
-        </div>
-    </body>
+    <h2>Perforce branches for {{ .project }} </h2>
+    <div class="form-group">
+        {{range .payloadbranch}}
+            <li class="list-group-item list-group-item-light">{{ .Name | convertFileJSONResp }}</li>
+        {{end}}
+    </div>
 
+</div>
+
+<!-- Footer -->
 {{ template "foot.tmpl" .}}
+
 {{ end }}

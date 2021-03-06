@@ -67,13 +67,14 @@ type returnAppResp struct {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 var allProjects = []dreProject{
-	{Project: "Kingston", Projshort: "kin", Studio: "DICE"},
-	{Project: "Walrus", Projshort: "wal", Studio: "DICE"},
-	{Project: "Casablanca", Projshort: "cas", Studio: "DICE"},
+	{Project: "Kingston", Projshort: "kin", Studio: "DICE, Critiron"},
 	{Project: "DiceUpgradeNext", Projshort: "dun", Studio: "DICE"},
 	{Project: "FB1", Projshort: "fb1", Studio: "Frostbite"},
 	{Project: "FB2021", Projshort: "fb2021", Studio: "Frostbite"},
 	{Project: "Excalibur", Projshort: "exc", Studio: "Critiron"},
+	{Project: "Walrus", Projshort: "wal", Studio: "DICE"},
+	{Project: "Casablanca", Projshort: "cas", Studio: "DICE"},
+	{Project: "Roboto", Projshort: "rbt", Studio: "Critiron"},
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -156,6 +157,7 @@ func projectInfoHandler(c *gin.Context) {
 		"payload": allProjects, //on json or xml response can retrieve more info than html
 		"version": render.VersionPage,
 		"author":  render.ContactAuthor,
+		"title":   "Jenkins Services",
 	}, "jenkins/info.tmpl")
 }
 
@@ -183,5 +185,6 @@ func jenkinsInstanceHandler(c *gin.Context) {
 		"version":       render.VersionPage,
 		"author":        render.ContactAuthor,
 		"project":       projName,
+		"title":         "{{ .project }} Jenkins",
 	}, "jenkins/main.tmpl")
 }

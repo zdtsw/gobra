@@ -1,20 +1,23 @@
 {{ define "bilbo/health.tmpl" }}
+
+<!-- Header -->
 {{ template "head.tmpl" .}}
 
- <body>
-    <div class="container" style="font-family: 'Sans-Regular';">
-        <div  class="custom">
-            {{range .bilboSummary}}
-                <h2>Bilbo realtime information:<img height="90px"></h2>
-                <div class="form-group">
-                        <li>ClusterName: {{ .ClusterName }}</li>
-                        <li>Current Status: {{ .Status }}</li>
-                        <li>Total number of nodes: {{ .NumberOfNodes }}</li>
-                </div>  
-            {{ end }}
-  
-        </div>
+<div class="w3-container" style="font-family: 'Sans-Regular';">
+    <div  class="custom">
+        {{range .bilboSummary}}
+            <h2>Bilbo realtime information:<img height="90px"></h2>
+            <div class="form-group">
+                    <li>ClusterName: {{ .ClusterName }}</li>
+                    <li>Current Status: {{ .Status }}</li>
+                    <li>Total number of nodes: {{ .NumberOfNodes }}</li>
+            </div>  
+        {{ end }}
+
     </div>
-</body>
+</div>
+
+<!-- Footer -->
 {{ template "foot.tmpl" .}}
+
 {{ end }}

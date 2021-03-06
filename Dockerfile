@@ -2,7 +2,7 @@ FROM golang:1.15.8 AS builder
 LABEL maintainer="ericchou19831101@msn.com"
 
 ARG version="local"
-ARG author="WenZhou"
+ARG author="Wen Zhou"
 ARG app="gobra"
 ARG release=true
 

@@ -134,6 +134,7 @@ func healthBilboHandler(c *gin.Context) {
 		"bilboSummary": summary,
 		"version":      render.VersionPage,
 		"author":       render.ContactAuthor,
+		"title":        "Bilbo Services",
 	}, "bilbo/health.tmpl")
 }
 

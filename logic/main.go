@@ -10,7 +10,7 @@ import (
 // global variable definitions
 var (
 	version string = "beta"
-	author  string = "WenZhou"
+	author  string = "Wen Zhou"
 	project string
 	release bool
 	esIndex string = "bilbo"
