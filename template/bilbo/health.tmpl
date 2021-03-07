@@ -3,15 +3,16 @@
 <!-- Header -->
 {{ template "head.tmpl" .}}
 
+
 <div class="w3-container" style="font-family: 'Sans-Regular';">
-    <div  class="custom">
+    <div class="custom">
         {{range .bilboSummary}}
-            <h2>Bilbo realtime information:<img height="90px"></h2>
-            <div class="form-group">
-                    <li>ClusterName: {{ .ClusterName }}</li>
-                    <li>Current Status: {{ .Status }}</li>
-                    <li>Total number of nodes: {{ .NumberOfNodes }}</li>
-            </div>  
+            <h2>Bilbo realtime status:</h2>
+                <div class="form-group">
+                        <li>ClusterName:<a href={{ .URL }}>{{ .ClusterName }}</a></li>
+                        <li>{{ .Status }}<img id="{{ .ClusterName }}" alt="{{ .Status }}" src="{{ .Status | showStatusIcon }}" height="50px"></li>
+                        <li>Total number of nodes: {{ .NumberOfNodes }}</li>
+                </div>
         {{ end }}
 
     </div>

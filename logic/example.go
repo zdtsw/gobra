@@ -52,3 +52,25 @@ func renderFormat(c *gin.Context, data gin.H, templateName string) {
 	}
 
 }
+
+/*
+<script>
+function loadImage(){
+    console.log("lololololo");
+  //  element.setAttribute("src", "/img/redcheck.svg");
+
+
+function changeImage(element, ClusterName)
+{
+    var x = document.getElementById(ClusterName);
+    console.log(x);
+    console.log(x.getAttribute("alt"));
+   //  var y = document.getElementsByTagName("P");
+   // console.log(y)
+    if (x == "red" ) {
+        v ="/img/redcheck.svg";
+        x.setAttribute("src", v);
+    }
+}
+</script>
+*/

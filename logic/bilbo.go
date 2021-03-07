@@ -21,10 +21,20 @@ var escfg = es6.Config{
 //////////////////////////////////////////////////////////////////////////////////
 type healthResp struct {
 	ClusterName       string `json:"cluster_name"`
+	URL               string
 	Status            string `json:"status"`
 	Timedout          bool   `json:"timed_out"`
 	NumberOfNodes     int    `json:"number_of_nodes"`
 	NumberOfDataNodes int    `json:"number_of_data_nodes"`
+}
+
+////////////////////template functions/////////////////////////////
+func showStatusIcon(status string) string {
+	if status != "green" {
+		return "/img/redcheck.svg"
+	} else {
+		return "/img/greencheck.svg"
+	}
 }
 
 // module for "bilbo"
@@ -126,7 +136,7 @@ func healthBilboHandler(c *gin.Context) {
 			if err := json.Unmarshal(body, &healthy); err != nil {
 				errorHandler(err)
 			}
-			summary = append(summary, healthResp{ClusterName: healthy.ClusterName, Status: healthy.Status, NumberOfNodes: healthy.NumberOfNodes})
+			summary = append(summary, healthResp{ClusterName: healthy.ClusterName, URL: "http://" + bilboInstance.URL, Status: healthy.Status, NumberOfNodes: healthy.NumberOfNodes})
 		}
 	}
 	//fmt.Println(summary)

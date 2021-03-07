@@ -57,6 +57,7 @@ func main() {
 	// register some functions
 	r.SetFuncMap(template.FuncMap{
 		"convertFileJSONResp": convertFileJSONResp,
+		"showStatusIcon":      showStatusIcon,
 	})
 
 	r.LoadHTMLGlob("template/**/*.tmpl")
