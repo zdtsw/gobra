@@ -10,6 +10,40 @@ import (
 
 // module for "support"
 
+///////////////////////////////////data strcture /////////////////////////////////////////
+type appResponse struct {
+	Apps []struct {
+		ID        string `json:"id"`
+		Container struct {
+			Docker struct {
+				Image      string `json:"image"`
+				Parameters []struct {
+					Key   string `json:"key"`
+					Value string `json:"value"`
+				} `json:"parameters"`
+			} `json:"docker"`
+		} `json:"container"`
+		Env struct {
+			JAVAOPTS        string `json:"JAVA_OPTS"`
+			PROJECTSEEDROOT string `json:"PROJECT_SEED_ROOT"`
+			NAME            string `json:"CLUSTER_NAME"`
+		} `json:"env"`
+		Labels struct {
+			SEEDROOT string `json:"SEED_ROOT"`
+			IsTest   string `json:"IS_TEST_INSTANCE"`
+			VHOST    string `json:"HAPROXY_0_VHOST"`
+		} `json:"labels"`
+		TasksRunning int `json:"TasksRunning"`
+	} `json:"apps"`
+}
+
+type returnAppResp struct {
+	Host    string
+	URL     string
+	Project string
+	Live    int
+}
+
 /////////////////////////////////////////////DCOS functions /////////////////////////////////////////////////
 func queryDCOS(appid string) []byte {
 	endpoint := "http://admin-thor.dice.se:8080/v2/apps?id=" + appid + "&label=HAPROXY_GROUP&embed=apps.count"
@@ -39,7 +73,7 @@ func parseDCOSJSONResponse(body []byte, instance string, projShort string) []ret
 			if app.Container.Docker.Image == "registry.gitlab.ea.com/"+image {
 				for _, pValue := range app.Container.Docker.Parameters {
 					if (pValue.Key == "hostname") && (strings.Contains(pValue.Value, projShort)) && (app.Labels.IsTest != "true") {
-						n = append(n, returnAppResp{Host: pValue.Value, URL: app.Labels.VHOST, Project: projShort})
+						n = append(n, returnAppResp{Host: pValue.Value, URL: app.Labels.VHOST, Project: projShort, Live: app.TasksRunning})
 						continue
 					}
 				}
@@ -47,10 +81,16 @@ func parseDCOSJSONResponse(body []byte, instance string, projShort string) []ret
 		case "bilbo":
 			image := "dre-cobra/bilbo:latest"
 			if app.Container.Docker.Image == "registry.gitlab.ea.com/"+image {
-				n = append(n, returnAppResp{Host: app.Env.NAME, URL: app.Labels.VHOST, Project: projShort})
+				n = append(n, returnAppResp{Host: app.Env.NAME, URL: app.Labels.VHOST, Project: projShort, Live: app.TasksRunning})
+				continue
+			}
+		case "metrics":
+			if app.Container.Docker.Image == "docker.elastic.co/elasticsearch/elasticsearch:6.2.2" {
+				n = append(n, returnAppResp{Host: app.Env.NAME, URL: app.Labels.VHOST, Project: projShort, Live: app.TasksRunning})
 				continue
 			}
 		}
+
 	}
 	//fmt.Println(n)
 	return n

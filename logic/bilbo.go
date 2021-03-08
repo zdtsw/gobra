@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	//es6api "github.com/elastic/go-elasticsearch/v6/esapi"
-	//"fmt"
+	// "fmt"
 )
 
 var bilbofqdn = "bilbo-fb1.dre.dice.se"
@@ -30,10 +30,15 @@ type healthResp struct {
 
 ////////////////////template functions/////////////////////////////
 func showStatusIcon(status string) string {
-	if status != "green" {
-		return "/img/redcheck.svg"
-	} else {
+	switch status {
+	case "red":
+		return "/img/redcross.svg"
+	case "yellow":
+		return "/img/yellowsign.svg"
+	case "green":
 		return "/img/greencheck.svg"
+	default:
+		return "/img/error.svg"
 	}
 }
 
@@ -116,15 +121,19 @@ func queryBilboHandler(c *gin.Context) {
 func healthBilboHandler(c *gin.Context) {
 	log.Println("Calling: healthBilboHandler")
 	log.Println("Load page in path: " + c.Request.URL.Path)
-	jsonBody := queryDCOS("bilbo/") // to exclude bilbo-ui
+	jsonBodyBilbo := queryDCOS("bilbo/") // to exclude bilbo-ui
+	jsonBodyMetric := queryDCOS("es-metrics-1")
 	//Projshort := "kin"
-	result := parseDCOSJSONResponse(jsonBody, "bilbo", "")
+	result := parseDCOSJSONResponse(jsonBodyBilbo, "bilbo", "")
+	result = append(result, parseDCOSJSONResponse(jsonBodyMetric, "metrics", "")...)
 
-	//fmt.Println(string(jsonBody))
 	var summary []healthResp
 	var healthy healthResp
 	for _, bilboInstance := range result {
 		endpoint := "http://" + bilboInstance.URL + "/_cluster/health?pretty"
+		if bilboInstance.Live == 0 {
+			continue
+		}
 		resp, err := http.Get(endpoint)
 		if err != nil {
 			errorHandler(err)
