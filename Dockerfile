@@ -1,9 +1,10 @@
+ARG version="local"
+ARG app="gobra"
+
 FROM golang:1.15.8 AS builder
 LABEL maintainer="ericchou19831101@msn.com"
 
-ARG version="local"
 ARG author="Wen_Zhou"
-ARG app="gobra"
 ARG release=true
 
 ENV GOOS=linux \

@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	//"fmt"
+	"crypto/tls"
 	"strings"
 )
 
@@ -66,7 +67,11 @@ func queryGitlab(path string, isFile bool) []byte {
 	req.Header.Add("Authorization", token)
 
 	// resp, err := http.Get(endpoint); if we do not need token, this should be enough
-	client := &http.Client{}
+
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := &http.Client{Transport: tr}
 	resp, err := client.Do(req)
 
 	if err != nil {
