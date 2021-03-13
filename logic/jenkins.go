@@ -23,9 +23,11 @@ const (
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 type dreProject struct {
-	Project   string `json:"project"`
-	Projshort string `json:"short"`
-	Studio    string `json:"studio"`
+	Project    string `json:"project"`
+	Projshort  string `json:"short"`
+	Studio     string `json:"studio"`
+	Dashboard  string `json:"dashboard"`
+	Googlepage string `json:"google"`
 }
 type gitlabResponseFolder []struct {
 	//ID   string `json:"id"`  // useless field comment out
@@ -37,13 +39,31 @@ type gitlabResponseFolder []struct {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 var allProjects = []dreProject{
-	{Project: "Kingston", Projshort: "kin", Studio: "DICE, Critiron"},
-	{Project: "DiceUpgradeNext", Projshort: "dun", Studio: "DICE"},
+	{
+		Project: "Kingston", Projshort: "kin", Studio: "DICE, Critiron",
+		Dashboard:  "https://dre-cobra-dashing.dre.dice.se/KinPreflightQueue",
+		Googlepage: "https://sites.google.com/dice.se/dre-cobra-kingston/home",
+	},
+	{
+		Project: "DiceUpgradeNext", Projshort: "dun", Studio: "DICE",
+		Dashboard:  "https://dre-cobra-dashing.dre.dice.se/DunPreflightQueue",
+		Googlepage: "https://sites.google.com/dice.se/dre-cobra-dun/home",
+	},
 	{Project: "FB1", Projshort: "fb1", Studio: "Frostbite"},
 	{Project: "FB2021", Projshort: "fb2021", Studio: "Frostbite"},
-	{Project: "Excalibur", Projshort: "exc", Studio: "Critiron"},
-	{Project: "Walrus", Projshort: "wal", Studio: "DICE"},
-	{Project: "Casablanca", Projshort: "cas", Studio: "DICE"},
+	{
+		Project: "Excalibur", Projshort: "exc", Studio: "Critiron",
+		Dashboard:  "https://excalibur-devblog.eu.ad.ea.com/devblog/dashboard",
+		Googlepage: "https://sites.google.com/dice.se/dre-cobra-excalibur/home",
+	},
+	{
+		Project: "Walrus", Projshort: "wal", Studio: "DICE",
+		Googlepage: "https://sites.google.com/dice.se/dre-cobra-walrus/home",
+	},
+	{
+		Project: "Casablanca", Projshort: "cas", Studio: "DICE",
+		Googlepage: "https://sites.google.com/dice.se/dre-cobra-casablanca/home",
+	},
 	{Project: "Roboto", Projshort: "rbt", Studio: "Critiron"},
 }
 
