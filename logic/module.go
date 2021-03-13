@@ -4,7 +4,10 @@ import (
 	"encoding/json"
 	//"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"runtime"
+	"strconv"
 	"strings"
 )
 
@@ -42,6 +45,27 @@ type returnAppResp struct {
 	URL     string
 	Project string
 	Live    int
+}
+
+/////////////////////////////////////////////LOGGIN functions ///////////////////////////////////////////////
+func log4Debug() {
+	_, filename, lineNum, stat := runtime.Caller(0)
+	if stat {
+		log.Println("Calling: " + filename + " line: " + strconv.Itoa(lineNum))
+	}
+}
+
+func log4Caller() {
+	pc, _, _, stat := runtime.Caller(1)
+	details := runtime.FuncForPC(pc)
+	if stat && details != nil {
+		log.Println("Called from: " + details.Name())
+	}
+}
+
+
+func log4Load() {
+	//TODO
 }
 
 /////////////////////////////////////////////DCOS functions /////////////////////////////////////////////////

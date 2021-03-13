@@ -144,7 +144,8 @@ func convertFileJSONResp(n string) string {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // routine functions for /jenkins/info
 func projectInfoHandler(c *gin.Context) {
-	log.Println("Calling: jenkinsInfoHandler")
+	log4Caller()
+	log4Debug()
 	log.Println("Load page in path: " + c.Request.URL.Path)
 	allProjects := getAllProjects()
 	renderResponse(c, gin.H{
@@ -157,7 +158,9 @@ func projectInfoHandler(c *gin.Context) {
 
 // routine functions for /jenkins/project/:proj
 func jenkinsInstanceHandler(c *gin.Context) {
-	log.Println("Calling: jenkinsMainHandler")
+	log4Caller()
+	log4Debug()
+
 	log.Println("Load page in path: " + c.Request.URL.Path)
 	projName := c.Param("proj")
 	//allMasters := getJenkinsMasters(projName)

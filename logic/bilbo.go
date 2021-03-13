@@ -1,13 +1,16 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+
 	//"net/url"
 	"encoding/json"
+	"io/ioutil"
+
 	es6 "github.com/elastic/go-elasticsearch/v6"
 	"github.com/gin-gonic/gin"
-	"io/ioutil"
 	//es6api "github.com/elastic/go-elasticsearch/v6/esapi"
 	// "fmt"
 )
@@ -44,7 +47,8 @@ func showStatusIcon(status string) string {
 
 // module for "bilbo"
 func createBilboHandler(c *gin.Context) {
-	log.Println("Calling: createBilboHandler")
+	log4Caller()
+	log4Debug()
 	log.Println("Load page in path: " + c.Request.URL.Path)
 	// if ( myindex == "" ) {		myindex = esIndex	}
 	// curl -XPUT  --header 'Content-Type: application/json' http://localhost:9200/myindex/_doc/1 -d '{
@@ -67,15 +71,27 @@ func createBilboHandler(c *gin.Context) {
 }
 
 func updateBilboHandler(c *gin.Context) {
-	log.Println("Calling: updateBilboHandler")
+	log4Caller()
+	log4Debug()
 	log.Println("Load page in path: " + c.Request.URL.Path)
 	//if ( myindex == "" ) {		myindex = esIndex	}
 	//curl -u elastic:(password) -X DELETE 'http://localhost:9200/myindex'  delete index
 }
 
-func queryBilboHandler(c *gin.Context) {
-	log.Println("Calling: queryBilboHandler")
+func loadQueryPageHandler(c *gin.Context) {
+	log4Caller()
+	log4Debug()
 	log.Println("Load page in path: " + c.Request.URL.Path)
+}
+
+func queryBilboHandler(c *gin.Context) {
+	queryType := [...]string{"code", "tnt_local", "ant_local", "drone", "symbols", "avalanchestate", "avalanchestate_autotest", "webexport", "frosty", "expressiondebugdata", "bundles", "clone_db", "build"}
+	fmt.Println(queryType)
+
+	log4Caller()
+	log4Debug()
+	log.Println("Load page in path: " + c.Request.URL.Path)
+
 	var es = new(es6.Client)
 	es = initES()
 	res, _ := es.Search(
@@ -92,6 +108,7 @@ func queryBilboHandler(c *gin.Context) {
 	// curl -u elastic:(password) -XGET 'http://localhost:9200/myindex/_search?pretty' list all documents in index
 	// curl -u elastic:(password) -XGET http://localhost:9200/myindex list index mapping
 	// curl -u elastic:(password) -XGET http://localhost:9200/myindex/_search?q=school:Harvard query when school=Harvard
+	// http://bilbo-kin-uk.dre.dice.se/bilbo/_search?q=type:drone
 	// curl -u elastic:(password) -XGET --header 'Content-Type: application/json' http://localhost:9200/myindex/_search -d '{
 	// 	"query" : {
 	// 		"match" : { "school": "Harvard"
@@ -119,8 +136,10 @@ func queryBilboHandler(c *gin.Context) {
 }
 
 func healthBilboHandler(c *gin.Context) {
-	log.Println("Calling: healthBilboHandler")
+	log4Caller()
+	log4Debug()
 	log.Println("Load page in path: " + c.Request.URL.Path)
+
 	jsonBodyBilbo := queryDCOS("bilbo/") // to exclude bilbo-ui
 	jsonBodyMetric := queryDCOS("es-metrics-1")
 	//Projshort := "kin"
@@ -130,7 +149,7 @@ func healthBilboHandler(c *gin.Context) {
 	var summary []healthResp
 	var healthy healthResp
 	for _, bilboInstance := range result {
-		endpoint := "http://" + bilboInstance.URL + "/_cluster/health?pretty"
+		endpoint := "https://" + bilboInstance.URL + "/_cluster/health?pretty"
 		if bilboInstance.Live == 0 {
 			continue
 		}
@@ -145,7 +164,7 @@ func healthBilboHandler(c *gin.Context) {
 			if err := json.Unmarshal(body, &healthy); err != nil {
 				errorHandler(err)
 			}
-			summary = append(summary, healthResp{ClusterName: healthy.ClusterName, URL: "http://" + bilboInstance.URL, Status: healthy.Status, NumberOfNodes: healthy.NumberOfNodes})
+			summary = append(summary, healthResp{ClusterName: healthy.ClusterName, URL: "https://" + bilboInstance.URL, Status: healthy.Status, NumberOfNodes: healthy.NumberOfNodes})
 		}
 	}
 	//fmt.Println(summary)
@@ -158,7 +177,8 @@ func healthBilboHandler(c *gin.Context) {
 }
 
 func initES() *es6.Client {
-	log.Println("Calling: initES")
+	log4Debug()
+	log4Caller()
 	es, err := es6.NewDefaultClient()
 	log.Println(es6.Version)
 
