@@ -3,20 +3,53 @@
 <!-- Header -->
 {{ template "head.tmpl" .}}
 
-
 <div class="w3-container" style="font-family: 'Sans-Regular';">     
     <div class="custom">
-        {{range .bilboSummary}}
+        {{ range .bilboSummary }}
             <h2>cluster status:</h2>
                 <div class="form-group">
                         <li>ClusterName:<a href={{ .URL }}>{{ .ClusterName }}</a></li>
                         <li>Status<img id="{{ .ClusterName }}" alt="{{ .Status }}" src="{{ .Status | showStatusIcon }}" height="50px"></li>
                         <li>Total number of nodes: {{ .NumberOfNodes }}</li>
-                        <li><a href="/bilbo/query/{{ .ClusterName }}">Query</a></li>
+
+                        <!-- li><a href="/bilbo/query/{{ .ClusterName }}">Query</a></li -->
+
+                        <div>
+                            <li> Select bilbo operation:
+                            <select id="select_ops" name="select_ops" onchange="showcont('hidden_bilbotype_{{.ClusterName}}', this)">
+                            <optgroup label="Bilbo Operation:">
+                                <option value="empty">        </option>
+                                <option value="query">Query   </option>
+                                <option value="create">Create (Admin only) </option>
+                                <option value="update">Update (Admin only) </option>
+                                <option value="delete">Delete (Admin only) </option>
+                            </select>
+
+                            <select id="hidden_bilbotype_{{.ClusterName}}" style="display:none;">
+                            <optgroup label="Document Type:">
+                                {{ range $.docTypeList }}
+                                    <option value="{{.}}"> {{.}} </option>
+                                {{ end }}
+                            </select>
+
+                            </li>
+                        </div>
+
                 </div>
+                <br><br>
         {{ end }}
     </div>
 </div>
+
+<script>
+    function showcont(id,element){
+        if(element.value != "empty"){
+        document.getElementById(id).style.display = "block";
+        } else{
+        document.getElementById(id).style.display = "none";
+        }
+    }
+</script>
 
 <!-- Footer -->
 {{ template "foot.tmpl" .}}

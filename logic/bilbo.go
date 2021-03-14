@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -20,6 +19,21 @@ var bilboport = ":9200"
 var escfg = es6.Config{
 	Addresses: []string{"https://" + bilbofqdn + bilboport},
 }
+var docTypeList = [...]string{
+	"code",
+	"tnt_local",
+	"ant_local",
+	"drone",
+	"symbols",
+	"avalanchestate",
+	"avalanchestate_autotest",
+	"webexport",
+	"frosty",
+	"expressiondebugdata",
+	"bundles",
+	"clone_db",
+	"build",
+}
 
 //////////////////////////////////////////////////////////////////////////////////
 type healthResp struct {
@@ -29,6 +43,11 @@ type healthResp struct {
 	Timedout          bool   `json:"timed_out"`
 	NumberOfNodes     int    `json:"number_of_nodes"`
 	NumberOfDataNodes int    `json:"number_of_data_nodes"`
+}
+
+type bilboOpsDropDown struct {
+	value string
+	name  string
 }
 
 ////////////////////template functions/////////////////////////////
@@ -85,8 +104,6 @@ func loadQueryPageHandler(c *gin.Context) {
 }
 
 func queryBilboHandler(c *gin.Context) {
-	queryType := [...]string{"code", "tnt_local", "ant_local", "drone", "symbols", "avalanchestate", "avalanchestate_autotest", "webexport", "frosty", "expressiondebugdata", "bundles", "clone_db", "build"}
-	fmt.Println(queryType)
 
 	log4Caller()
 	log4Debug()
@@ -173,6 +190,7 @@ func healthBilboHandler(c *gin.Context) {
 		"version":      render.VersionPage,
 		"author":       render.ContactAuthor,
 		"title":        "Bilbo Services",
+		"docTypeList":  docTypeList,
 	}, "bilbo/health.tmpl")
 }
 
