@@ -10,14 +10,14 @@
             <li>  <a href="https://{{.Name| convertFileJSONResp}}.dre.dice.se">{{ .Name | convertFileJSONResp }}</a>  </li>
         {{end}}
     </div>
-    
-    <h2>Perforce branches for {{ .project }} </h2>
-    <div class="form-group">
-        {{range .payloadbranch}}
-            <li class="list-group-item list-group-item-light">{{ .Name | convertFileJSONResp }}</li>
-        {{end}}
-    </div>
-</div>
+    <form action="/result.tmpl">
+        <label for="cars">Choose what you want to do with bilbo:</label>
+        <select name="operation" id="ops">
+            {{range .bilboOps}}
+                <option value="{{ .Operation }}">{{ .Operation }}</option>
+            {{end}}
+        </select>
+    <input type="submit" value="Submit">
 
 <!-- Footer -->
 {{ template "foot.html" .}}

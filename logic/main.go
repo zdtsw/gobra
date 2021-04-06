@@ -47,7 +47,7 @@ func errorHandler(err error) {
 
 // main function definition
 func main() {
-
+	log4Caller()
 	if release {
 		gin.SetMode(gin.ReleaseMode)
 	}
@@ -73,7 +73,7 @@ func main() {
 		bilbo.GET("/health", healthBilboHandler)
 		bilbo.GET("/create/:proj", createBilboHandler)
 		bilbo.GET("/update/:proj", updateBilboHandler)
-		bilbo.GET("/query/:proj", queryBilboHandler)
+		bilbo.GET("/query/bilbo-kin", loadQueryPageHandler)
 	}
 	jenkins := r.Group("/jenkins")
 	{

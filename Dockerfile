@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.2
 ARG version="local"
 ARG app="gobra"
 
