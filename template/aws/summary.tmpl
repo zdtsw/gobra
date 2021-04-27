@@ -1,0 +1,18 @@
+{{ define "aws/summary.tmpl" }}
+
+<!-- Header -->
+{{ template "head.tmpl" .}}
+
+<div class="w3-container">
+    <h2>All avaiable services we support in Gobra </h2>
+    <div class="form-group">
+        {{range .serviceList}}
+            <li><a href="svc/{{ . }}">{{ . }}</a> </li> 
+        {{end}}
+    </div>
+</div>
+
+<!-- Footer -->
+{{ template "foot.tmpl" .}}
+
+{{ end }}

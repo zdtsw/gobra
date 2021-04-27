@@ -1,0 +1,35 @@
+{{ define "bilbo/instance.tmpl" }}
+
+<!-- Header -->
+{{ template "head.tmpl" .}}
+
+<form>
+<select name="wen" id="wen"><option>Select A Country</option><option id="US" value="US">USA</option><option id="AUS" value="AUS">Australia</option></select>
+
+<iframe id="hello" style="display:none;" >  
+    <select name="docType" style="display:none;" id="doctype">
+        <option >Select Bilbo type</option>
+        <option value="drone">drone</option>
+        <option value="code">code</option>
+        <option value="webexport">webexport</option>
+    </select>
+</iframe>
+</form>
+
+<!-- Footer -->
+{{ template "foot.html" .}}
+
+{{ end }}
+
+
+
+function showDocTypes(id)
+{
+$("#"+id).css("display", "block");
+# $("#"+id).show(); 
+# $("#"+id).hide();
+}
+
+$("#wen").on("change", function(){
+    showDocTypes('hello');
+});

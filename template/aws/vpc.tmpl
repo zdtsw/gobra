@@ -1,0 +1,19 @@
+{{ define "aws/vpc.tmpl" }}
+
+<!-- Header -->
+{{ template "head.tmpl" .}}
+
+<div class="w3-container">
+    <h2>VPC resources for project {{ .project }} </h2>
+    <div class="form-group">
+        {{range .payloadmaster}}
+            <li></li> 
+        {{end}}
+    </div>
+
+</div>
+
+<!-- Footer -->
+{{ template "foot.tmpl" .}}
+
+{{ end }}

@@ -13,8 +13,8 @@ var (
 	author  string = "Wen Zhou"
 	project string
 	release bool
-	esIndex string = "bilbo"
-	r       *gin.Engine
+	// esIndex string = "bilbo"
+	// r       *gin.Engine
 )
 
 type pageFiller struct {
@@ -47,7 +47,7 @@ func errorHandler(err error) {
 
 // main function definition
 func main() {
-	log4Caller()
+
 	if release {
 		gin.SetMode(gin.ReleaseMode)
 	}
@@ -73,7 +73,7 @@ func main() {
 		bilbo.GET("/health", healthBilboHandler)
 		bilbo.GET("/create/:proj", createBilboHandler)
 		bilbo.GET("/update/:proj", updateBilboHandler)
-		bilbo.GET("/query/bilbo-kin", loadQueryPageHandler)
+		bilbo.GET("/query/:proj", queryBilboHandler)
 	}
 	jenkins := r.Group("/jenkins")
 	{
@@ -84,6 +84,11 @@ func main() {
 	{
 		k8s.GET("/list", listServiceHandler)
 		k8s.GET("/action/:action", createServiceHandler)
+	}
+	aws := r.Group("/aws")
+	{
+		aws.GET("/sum", AWSServiceHandler)
+		aws.GET("/svc/:service", Dispatcher)
 	}
 
 	r.Run(":8888")

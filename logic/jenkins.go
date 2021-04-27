@@ -3,20 +3,19 @@ package main
 // module for "jenkins"
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
-	//"fmt"
-	"crypto/tls"
 	"strings"
 )
 
 const (
-	dstURLFileHead   string = "https://gitlab.ea.com/api/v4/projects/1410/repository/files%2Fsrc%2Fproject/"
-	dstURLFolderHead string = "https://gitlab.ea.com/api/v4/projects/1410/repository/tree?path=src/project/"
+	dstURLFileHead   string = "https://gitlab.mycompany.com/api/v4/projects/1410/repository/files%2Fsrc%2Fproject/"
+	dstURLFolderHead string = "https://gitlab.mycompany.com/api/v4/projects/1410/repository/tree?path=src/project/"
 	dstURLTail       string = "/raw?ref=master"
 	token            string = "Bearer txt1Jvx1ywo6LfZ3qndi"
 )
@@ -41,28 +40,28 @@ type gitlabResponseFolder []struct {
 var allProjects = []dreProject{
 	{
 		Project: "Kingston", Projshort: "kin", Studio: "DICE, Critiron",
-		Dashboard:  "https://dre-cobra-dashing.dre.dice.se/KinPreflightQueue",
-		Googlepage: "https://sites.google.com/dice.se/dre-cobra-kingston/home",
+		Dashboard:  "https://wen-dashing.dre.mycompany.com/KinPreflightQueue",
+		Googlepage: "https://sites.google.com/mycompany.com/wen-kingston/home",
 	},
 	{
 		Project: "DiceUpgradeNext", Projshort: "dun", Studio: "DICE",
-		Dashboard:  "https://dre-cobra-dashing.dre.dice.se/DunPreflightQueue",
-		Googlepage: "https://sites.google.com/dice.se/dre-cobra-dun/home",
+		Dashboard:  "https://wen-dashing.dre.mycompany.com/DunPreflightQueue",
+		Googlepage: "https://sites.google.com/mycompany.com/wen-dun/home",
 	},
 	{Project: "FB1", Projshort: "fb1", Studio: "Frostbite"},
 	{Project: "FB2021", Projshort: "fb2021", Studio: "Frostbite"},
 	{
 		Project: "Excalibur", Projshort: "exc", Studio: "Critiron",
-		Dashboard:  "https://excalibur-devblog.eu.ad.ea.com/devblog/dashboard",
-		Googlepage: "https://sites.google.com/dice.se/dre-cobra-excalibur/home",
+		Dashboard:  "https://excalibur-devblog.eu.ad.mycompany.com/devblog/dashboard",
+		Googlepage: "https://sites.google.com/mycompany.com/wen-excalibur/home",
 	},
 	{
 		Project: "Walrus", Projshort: "wal", Studio: "DICE",
-		Googlepage: "https://sites.google.com/dice.se/dre-cobra-walrus/home",
+		Googlepage: "https://sites.google.com/mycompany.com/wen-walrus/home",
 	},
 	{
 		Project: "Casablanca", Projshort: "cas", Studio: "DICE",
-		Googlepage: "https://sites.google.com/dice.se/dre-cobra-casablanca/home",
+		Googlepage: "https://sites.google.com/mycompany.com/wen-casablanca/home",
 	},
 	{Project: "Roboto", Projshort: "rbt", Studio: "Critiron"},
 }
@@ -81,13 +80,13 @@ func queryGitlab(path string, isFile bool) []byte {
 		endpoint = dstURLFolderHead + path
 	}
 
-	// log.Println("WEN--query: " + endpoint)
-
 	req, err := http.NewRequest("GET", endpoint, nil)
+	if err != nil {
+		errorHandler(err)
+	}
 	req.Header.Add("Authorization", token)
 
 	// resp, err := http.Get(endpoint); if we do not need token, this should be enough
-
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
@@ -103,14 +102,12 @@ func queryGitlab(path string, isFile bool) []byte {
 	if err != nil {
 		errorHandler(err)
 	}
-	//	log.Println("WEN--RESPONSE:" + string([]byte(body)))
+
 	return body
 }
 
 //////////////////////////////////JSON functins/////////////////////////////////////
 func parsegitlabJSONResponse(body []byte) *gitlabResponseFolder {
-	//	log.Println("WEN--running: parseJSONResponse()")
-	//fmt.Println(string(body))
 	var gr = new(gitlabResponseFolder)
 	if err := json.Unmarshal(body, &gr); err != nil {
 		errorHandler(err)
@@ -119,10 +116,10 @@ func parsegitlabJSONResponse(body []byte) *gitlabResponseFolder {
 	return gr
 }
 
-func getJenkinsMasters(Projshort string) *gitlabResponseFolder {
-	jsonBody := queryGitlab(Projshort+"/masterSettings", false)
-	return parsegitlabJSONResponse(jsonBody)
-}
+// func getJenkinsMasters(Projshort string) *gitlabResponseFolder {
+// 	jsonBody := queryGitlab(Projshort+"/masterSettings", false)
+// 	return parsegitlabJSONResponse(jsonBody)
+// }
 
 func getJenkinsBranches(Projshort string) *gitlabResponseFolder {
 	jsonBody := queryGitlab(Projshort+"/branchSettings", false)
@@ -131,7 +128,6 @@ func getJenkinsBranches(Projshort string) *gitlabResponseFolder {
 
 func getJenkinsMasterURL(Projshort string) []returnAppResp {
 	jsonBody := queryDCOS("jenkins")
-	//fmt.Println(string(jsonBody))
 	return parseDCOSJSONResponse(jsonBody, "jenkins", Projshort)
 }
 
@@ -146,7 +142,6 @@ func convertFileJSONResp(n string) string {
 func projectInfoHandler(c *gin.Context) {
 	log4Caller()
 	log4Debug()
-	log.Println("Load page in path: " + c.Request.URL.Path)
 	allProjects := getAllProjects()
 	renderResponse(c, gin.H{
 		"payload": allProjects, //on json or xml response can retrieve more info than html
@@ -160,21 +155,12 @@ func projectInfoHandler(c *gin.Context) {
 func jenkinsInstanceHandler(c *gin.Context) {
 	log4Caller()
 	log4Debug()
-
 	log.Println("Load page in path: " + c.Request.URL.Path)
 	projName := c.Param("proj")
 	//allMasters := getJenkinsMasters(projName)
 	allBranches := getJenkinsBranches(projName)
 	allDCOS := getJenkinsMasterURL(projName)
-	//if (gitlabResponseFolder{}) == allMasters  {log.Println("WEN-DEBIG: allMasters is empty, damn it ")}
 
-	// c.HTML(http.StatusOK, "jenkins/main.tmpl", gin.H{
-	// 	"version": render.VersionPage,
-	// 	"author":  render.ContactAuthor,
-	// 	"project": projName,
-	// 	"payloadmaster": allMasters,
-	// 	"payloadbranch": allBranches,
-	//})
 	renderResponse(c, gin.H{
 		//"payloadmaster": allMasters,
 		"payloadbranch": allBranches,

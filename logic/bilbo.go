@@ -14,7 +14,7 @@ import (
 	// "fmt"
 )
 
-var bilbofqdn = "bilbo-fb1.dre.dice.se"
+var bilbofqdn = "bilbo-fb1.wen.mycompany.com"
 var bilboport = ":9200"
 var escfg = es6.Config{
 	Addresses: []string{"https://" + bilbofqdn + bilboport},
@@ -125,7 +125,7 @@ func queryBilboHandler(c *gin.Context) {
 	// curl -u elastic:(password) -XGET 'http://localhost:9200/myindex/_search?pretty' list all documents in index
 	// curl -u elastic:(password) -XGET http://localhost:9200/myindex list index mapping
 	// curl -u elastic:(password) -XGET http://localhost:9200/myindex/_search?q=school:Harvard query when school=Harvard
-	// http://bilbo-kin-uk.dre.dice.se/bilbo/_search?q=type:drone
+	// http://bilbo-kin-uk.wen.mycompany.com/bilbo/_search?q=type:drone
 	// curl -u elastic:(password) -XGET --header 'Content-Type: application/json' http://localhost:9200/myindex/_search -d '{
 	// 	"query" : {
 	// 		"match" : { "school": "Harvard"

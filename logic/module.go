@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	//"fmt"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -63,14 +63,21 @@ func log4Caller() {
 	}
 }
 
+// func log4Load() {
+// 	//TODO
+// }
 
-func log4Load() {
-	//TODO
+/////////////////////////////////////////////FORMAT functions ///////////////////////////////////////////////
+//print out format "space" number of space then input string list loop
+func spaceOutputs(space int, items ...string) {
+	for _, item := range items {
+		fmt.Println(strings.Repeat(" ", space) + item)
+	}
 }
 
 /////////////////////////////////////////////DCOS functions /////////////////////////////////////////////////
 func queryDCOS(appid string) []byte {
-	endpoint := "http://admin-thor.dice.se:8080/v2/apps?id=" + appid + "&label=HAPROXY_GROUP&embed=apps.count"
+	endpoint := "http://admin-thor.mycompany.com:8080/v2/apps?id=" + appid + "&label=HAPROXY_GROUP&embed=apps.count"
 	resp, err := http.Get(endpoint)
 	if err != nil {
 		errorHandler(err)
@@ -93,8 +100,8 @@ func parseDCOSJSONResponse(body []byte, instance string, projShort string) []ret
 		// var image string
 		switch instance {
 		case "jenkins":
-			image := "dreeu/docker-jenkins-oss:latest"
-			if app.Container.Docker.Image == "registry.gitlab.ea.com/"+image {
+			image := "eu/docker-jenkins-oss:latest"
+			if app.Container.Docker.Image == "registry.gitlab.mycompany.com/"+image {
 				for _, pValue := range app.Container.Docker.Parameters {
 					if (pValue.Key == "hostname") && (strings.Contains(pValue.Value, projShort)) && (app.Labels.IsTest != "true") {
 						n = append(n, returnAppResp{Host: pValue.Value, URL: app.Labels.VHOST, Project: projShort, Live: app.TasksRunning})
@@ -103,8 +110,8 @@ func parseDCOSJSONResponse(body []byte, instance string, projShort string) []ret
 				}
 			}
 		case "bilbo":
-			image := "dre-cobra/bilbo:latest"
-			if app.Container.Docker.Image == "registry.gitlab.ea.com/"+image {
+			image := "wen/bilbo:latest"
+			if app.Container.Docker.Image == "registry.gitlab.mycompany.com/"+image {
 				n = append(n, returnAppResp{Host: app.Env.NAME, URL: app.Labels.VHOST, Project: projShort, Live: app.TasksRunning})
 				continue
 			}
