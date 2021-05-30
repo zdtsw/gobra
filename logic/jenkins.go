@@ -39,31 +39,31 @@ type gitlabResponseFolder []struct {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 var allProjects = []dreProject{
 	{
-		Project: "Kingston", Projshort: "kin", Studio: "DICE, Critiron",
-		Dashboard:  "https://wen-dashing.dre.mycompany.com/KinPreflightQueue",
-		Googlepage: "https://sites.google.com/mycompany.com/wen-kingston/home",
+		Project: "MyProject1", Projshort: "One", Studio: "StudioA, StudioB",
+		Dashboard:  "https://wen-dashing.dre.mycompany.com/Queue",
+		Googlepage: "https://sites.google.com/mycompany.com/wen-myproject1/home",
 	},
 	{
-		Project: "DiceUpgradeNext", Projshort: "dun", Studio: "DICE",
-		Dashboard:  "https://wen-dashing.dre.mycompany.com/DunPreflightQueue",
-		Googlepage: "https://sites.google.com/mycompany.com/wen-dun/home",
+		Project: "MyProject2", Projshort: "Two", Studio: "StudioA",
+		Dashboard:  "https://wen-dashing.dre.mycompany.com/Queue",
+		Googlepage: "https://sites.google.com/mycompany.com/wen-myproject2/home",
 	},
-	{Project: "FB1", Projshort: "fb1", Studio: "Frostbite"},
-	{Project: "FB2021", Projshort: "fb2021", Studio: "Frostbite"},
+	{Project: "MyProject3", Projshort: "Tre", Studio: "StudioC"},
+	{Project: "MyProject4", Projshort: "Si", Studio: "StudioC"},
 	{
-		Project: "Excalibur", Projshort: "exc", Studio: "Critiron",
-		Dashboard:  "https://excalibur-devblog.eu.ad.mycompany.com/devblog/dashboard",
-		Googlepage: "https://sites.google.com/mycompany.com/wen-excalibur/home",
-	},
-	{
-		Project: "Walrus", Projshort: "wal", Studio: "DICE",
-		Googlepage: "https://sites.google.com/mycompany.com/wen-walrus/home",
+		Project: "MyProject5", Projshort: "Fem", Studio: "StudioB",
+		Dashboard:  "https://excalibur-devblog.mycompany.com/dev/dashboard",
+		Googlepage: "https://sites.google.com/mycompany.com/wen-myproject5/home",
 	},
 	{
-		Project: "Casablanca", Projshort: "cas", Studio: "DICE",
-		Googlepage: "https://sites.google.com/mycompany.com/wen-casablanca/home",
+		Project: "MyProject6", Projshort: "Six", Studio: "StudioA",
+		Googlepage: "https://sites.google.com/mycompany.com/wen-myproject6/home",
 	},
-	{Project: "Roboto", Projshort: "rbt", Studio: "Critiron"},
+	{
+		Project: "MyProject7", Projshort: "Sju", Studio: "StudioA",
+		Googlepage: "https://sites.google.com/mycompany.com/wen-myproject7/home",
+	},
+	{Project: "MyProject8", Projshort: "Eight", Studio: "StudioB"},
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

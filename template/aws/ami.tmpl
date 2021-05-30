@@ -1,0 +1,27 @@
+{{ define "aws/ami.tmpl" }}
+
+<!-- Header -->
+{{ template "head.tmpl" .}}
+
+<div class="w3-container">
+    <h2>AMI for {{ .project }} </h2>
+    <div class="form-group">
+        <table>
+        {{ range $eachAMI := .AMIList }}
+        <th>****************</th>
+            {{ range $key, $value := $eachAMI }}
+            <tr>
+                <td>{{ $key }}</td>
+                <td>{{ $value }}</td>
+            </tr>
+            {{end}}
+        {{end}}
+        </table>
+
+    </div>
+</div>
+
+<!-- Footer -->
+{{ template "foot.tmpl" .}}
+
+{{ end }}

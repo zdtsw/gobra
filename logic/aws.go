@@ -10,6 +10,7 @@ import (
 	"log"
 	// "os"
 	// "time"
+	//"sort"
 
 	"github.com/aws/aws-sdk-go/aws"
 	// "github.com/aws/aws-sdk-go/aws/awserr"
@@ -21,9 +22,13 @@ import (
 
 var serviceList = [...]string{
 	"ec2",
+	"ami",
+	"iam",
 	"vpc",
 	"cost",
 }
+
+const awsProject string = "WenProjectName"
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 func GetSession() *session.Session {
@@ -38,12 +43,16 @@ func GetSession() *session.Session {
 }
 
 //////////////////////////////////////EC2////////////////////////////////////////////////////////////////
-func FilterOnTags(name string) *ec2.DescribeInstancesInput {
-	params := &ec2.DescribeInstancesInput{
+// TODO: impletment as interface
+// type FilterOnTags interface {
+//     filtering() ***
+// }
+func FilterOnTags(proj string) *ec2.DescribeInstancesInput {
+	filters := &ec2.DescribeInstancesInput{
 		Filters: []*ec2.Filter{
 			{
 				Name:   aws.String("tag:Project"),
-				Values: []*string{aws.String(name)},
+				Values: []*string{aws.String(proj)},
 			},
 			{
 				Name:   aws.String("instance-state-name"),
@@ -51,15 +60,11 @@ func FilterOnTags(name string) *ec2.DescribeInstancesInput {
 			},
 		},
 	}
-	return params
+	return filters
 }
 
-func GetEC2Instances(sess *session.Session) ([]map[string]string, error) {
+func GetEC2Instances(sess *session.Session, filter *ec2.DescribeInstancesInput) ([]map[string]string, error) {
 	ec2Svc := ec2.New(sess)
-
-	var filter *ec2.DescribeInstancesInput
-	//only filter running/pending kingston ec2
-	filter = FilterOnTags("kingston")
 
 	result, err := ec2Svc.DescribeInstances(filter)
 	var resultCollection []map[string]string
@@ -69,13 +74,14 @@ func GetEC2Instances(sess *session.Session) ([]map[string]string, error) {
 		errorHandler(err)
 		return nil, err
 	} else {
-		instanceResult := make(map[string]string)
+
 		for _, res := range result.Reservations {
 			if res.RequesterId != nil {
 				spaceOutputs(0, "EC2 Requester: "+*res.RequesterId)
 			}
 
 			for _, i := range res.Instances {
+				instanceResult := make(map[string]string)
 				spaceOutputs(1, "Instance ID and Owner")
 				instanceResult["InstanceId"] = *i.InstanceId
 				instanceResult["OwnerId"] = *res.OwnerId
@@ -102,16 +108,8 @@ func GetEC2Instances(sess *session.Session) ([]map[string]string, error) {
 						spaceOutputs(4, *i.PrivateIpAddress)
 					}
 				}
+				resultCollection = append(resultCollection, instanceResult)
 			}
-			/* to have it copy to a temp map,
-			otherwise in the next loop once set new value to instanceResult,
-			the previous resultCollection changes*/
-			temp := make(map[string]string)
-			for index, element := range instanceResult {
-				temp[index] = element
-			}
-			resultCollection = append(resultCollection, temp)
-
 		}
 		return resultCollection, nil
 	}
@@ -119,7 +117,12 @@ func GetEC2Instances(sess *session.Session) ([]map[string]string, error) {
 
 func EC2Handler(c *gin.Context) {
 	sess := GetSession()
-	ec2InfoList, err := GetEC2Instances(sess)
+
+	var filter *ec2.DescribeInstancesInput
+	//only filter running/pending awsProject ec2
+	filter = FilterOnTags(awsProject)
+
+	ec2InfoList, err := GetEC2Instances(sess, filter)
 	if err != nil {
 		errorHandler(err)
 	}
@@ -127,9 +130,81 @@ func EC2Handler(c *gin.Context) {
 		"version":     render.VersionPage,
 		"author":      render.ContactAuthor,
 		"title":       "AWS Service EC2",
-		"project":     "Kingston",
+		"project":     "WenProject",
 		"ec2InfoList": ec2InfoList,
 	}, "aws/ec2.tmpl")
+}
+
+////////////////////////////////////////////////AMI///////////////////////////////////
+func FilterOnType(proj, env, build string) *ec2.DescribeImagesInput {
+	filters := &ec2.DescribeImagesInput{
+		Filters: []*ec2.Filter{
+			{
+				Name:   aws.String("tag:Project"),
+				Values: []*string{aws.String(proj)},
+			},
+			{
+				Name:   aws.String("tag:Environment"),
+				Values: []*string{aws.String(env)},
+			},
+			{
+				Name:   aws.String("tag:Type"),
+				Values: []*string{aws.String(build)},
+			},
+		},
+		Owners: []*string{aws.String("1355687902")}, // account number
+	}
+	return filters
+}
+
+func sortAMI(images []*ec2.Image) []*ec2.Image {
+	// TODO: implement sorting by time
+	sortedImages := images
+	// sort.Sort(imageSort(sortedImages))
+	return sortedImages
+}
+
+func GetAMI(sess *session.Session, filters *ec2.DescribeImagesInput) ([]map[string]string, error) {
+	ec2Svc := ec2.New(sess)
+	resultAMI, err := ec2Svc.DescribeImages(filters)
+	if err != nil {
+		fmt.Println("Error when retrieving information about AMI:")
+		errorHandler(err)
+	}
+	if len(resultAMI.Images) == 0 {
+		fmt.Println("Could not find AMI matching filters:")
+		return nil, nil
+	}
+	sortedImages := sortAMI(resultAMI.Images)
+	var resultCollection []map[string]string
+
+	spaceOutputs(1, "Sorted AMI:")
+	for _, i := range sortedImages {
+		ImagesInfo := make(map[string]string)
+		spaceOutputs(4, *i.ImageId, *i.Name, *i.CreationDate)
+		ImagesInfo["ImageId"] = *i.ImageId
+		ImagesInfo["Name"] = *i.Name
+		ImagesInfo["CreationDate"] = *i.CreationDate
+		resultCollection = append(resultCollection, ImagesInfo)
+	}
+	return resultCollection, nil
+}
+
+func AMIHandler(c *gin.Context) {
+	sess := GetSession()
+	var filter *ec2.DescribeImagesInput
+	filter = FilterOnType(awsProject, "product", "nightly")
+	AMIList, err := GetAMI(sess, filter)
+	if err != nil {
+		errorHandler(err)
+	}
+	renderResponse(c, gin.H{
+		"version": render.VersionPage,
+		"author":  render.ContactAuthor,
+		"title":   "AWS Service AMI",
+		"project": "WenProject",
+		"AMIList": AMIList,
+	}, "aws/ami.tmpl")
 }
 
 ////////////////////////////////////////////////VPC/////////////////////////////////////////////////////////////////////////////////////
@@ -142,6 +217,36 @@ func GetVPC(sess *session.Session) error {
 func VPCHandler(c *gin.Context) {
 	sess := GetSession()
 	err := GetVPC(sess)
+	if err != nil {
+		errorHandler(err)
+	}
+}
+
+//////////////////////////////////////////////IAM//////////////////////////////////////
+func GetIAM(sess *session.Session) error {
+	//TODO
+	fmt.Print("nice")
+	return nil
+}
+
+func IAMHandler(c *gin.Context) {
+	sess := GetSession()
+	err := GetIAM(sess)
+	if err != nil {
+		errorHandler(err)
+	}
+}
+
+/////////////////////////////////////////////Budget//////////////////////////////////
+func GetCost(sess *session.Session) error {
+	//TODO
+	fmt.Print("nice")
+	return nil
+}
+
+func CostHandler(c *gin.Context) {
+	sess := GetSession()
+	err := GetCost(sess)
 	if err != nil {
 		errorHandler(err)
 	}
@@ -165,10 +270,14 @@ func Dispatcher(c *gin.Context) {
 	switch svcName := c.Param("service"); svcName {
 	case "ec2":
 		EC2Handler(c)
+	case "ami":
+		AMIHandler(c)
 	case "vpc":
 		VPCHandler(c)
-	// case "budget":
-	// 	BudgetHandler()
+	case "iam":
+		IAMHandler(c)
+	case "cost":
+		CostHandler(c)
 	default:
 		fmt.Println("Invalid service in Gobra AWS")
 	}
