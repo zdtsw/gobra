@@ -40,12 +40,12 @@ type gitlabResponseFolder []struct {
 var allProjects = []dreProject{
 	{
 		Project: "MyProject1", Projshort: "One", Studio: "StudioA, StudioB",
-		Dashboard:  "https://wen-dashing.dre.mycompany.com/Queue",
+		Dashboard:  "https://wen-dashing.mycompany.com/Queue",
 		Googlepage: "https://sites.google.com/mycompany.com/wen-myproject1/home",
 	},
 	{
 		Project: "MyProject2", Projshort: "Two", Studio: "StudioA",
-		Dashboard:  "https://wen-dashing.dre.mycompany.com/Queue",
+		Dashboard:  "https://wen-dashing.mycompany.com/Queue",
 		Googlepage: "https://sites.google.com/mycompany.com/wen-myproject2/home",
 	},
 	{Project: "MyProject3", Projshort: "Tre", Studio: "StudioC"},
@@ -138,7 +138,15 @@ func convertFileJSONResp(n string) string {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-// routine functions for /jenkins/info
+// projectInfoHandler godoc
+// @Summary Show a specific Jenkins controller info
+// @Description get detail info. about controller
+// @ID projectInfoHandler
+// @Tags jenkins
+// @Accept  json
+// @Produce  json
+// @Success 200 {string} todo
+// @Router /jenkins/info [get]
 func projectInfoHandler(c *gin.Context) {
 	log4Caller()
 	log4Debug()
@@ -151,7 +159,17 @@ func projectInfoHandler(c *gin.Context) {
 	}, "jenkins/info.tmpl")
 }
 
-// routine functions for /jenkins/project/:proj
+
+// jenkinsInstanceHandler godoc
+// @Summary Show a specific Jenkins controller info
+// @Description get detail info. about controller with branches
+// @ID jenkinsInstanceHandler
+// @Tags jenkins
+// @Accept  json
+// @Produce  json
+// @Param proj path string true "Project Name"
+// @Success 200 {string} todo
+// @Router /jenkins/project/{proj} [get]
 func jenkinsInstanceHandler(c *gin.Context) {
 	log4Caller()
 	log4Debug()

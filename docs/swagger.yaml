@@ -1,0 +1,99 @@
+basePath: /api/v1
+host: localhost:8888
+info:
+  contact:
+    email: ericchou19831101@msn.com
+    name: Wen Zhou
+  description: Swagger API doc for Gobra.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Swagger Gobra API
+  version: beta
+paths:
+  /:
+    get:
+      consumes:
+      - application/json
+      description: list jenkins, bilbo, k8s, aws and so on
+      operationId: showIndexPage
+      produces:
+      - text/html
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Show a list of services provided in Gobra
+      tags:
+      - main
+  /api/v1/aws/svc/ami:
+    get:
+      consumes:
+      - application/json
+      description: show information of ec2
+      produces:
+      - text/html
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: ami
+      tags:
+      - aws
+  /api/v1/aws/svc/ec2:
+    get:
+      consumes:
+      - application/json
+      description: show information of ec2
+      produces:
+      - text/html
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: ec2
+      tags:
+      - aws
+  /jenkins/info:
+    get:
+      consumes:
+      - application/json
+      description: get detail info. about controller
+      operationId: projectInfoHandler
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Show a specific Jenkins controller info
+      tags:
+      - jenkins
+  /jenkins/project/{proj}:
+    get:
+      consumes:
+      - application/json
+      description: get detail info. about controller with branches
+      operationId: jenkinsInstanceHandler
+      parameters:
+      - description: Project Name
+        in: path
+        name: proj
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Show a specific Jenkins controller info
+      tags:
+      - jenkins
+swagger: "2.0"

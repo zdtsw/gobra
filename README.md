@@ -1,5 +1,11 @@
+Install swag
+>go get -u github.com/swaggo/swag/cmd/swag
+
+Generate swagger
+>cd $GIT_ROOT; swag init -g logic/main.go
+
 To build
->cd logic; go build -o gobra
+>cd $GIT_ROOT/logic; go build -o gobra
 To run
 >cd $GIT_ROOT; logic/gobra
 

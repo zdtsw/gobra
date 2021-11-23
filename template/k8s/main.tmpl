@@ -7,7 +7,7 @@
     <h2>Jenkins Masters for {{ .project }} </h2>
     <div class="form-group">
         {{range .payloadmaster}}
-            <li>  <a href="https://{{.Name| convertFileJSONResp}}.dre.mycompany.com">{{ .Name | convertFileJSONResp }}<img height="90px"></a>  </li> 
+            <li>  <a href="https://{{.Name| convertFileJSONResp}}.mycompany.com">{{ .Name | convertFileJSONResp }}<img height="90px"></a>  </li> 
         {{end}}
     </div>
 

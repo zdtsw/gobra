@@ -1,0 +1,148 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Swagger API doc for Gobra.",
+        "title": "Swagger Gobra API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "Wen Zhou",
+            "email": "ericchou19831101@msn.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "beta"
+    },
+    "host": "localhost:8888",
+    "basePath": "/api/v1",
+    "paths": {
+        "/": {
+            "get": {
+                "description": "list jenkins, bilbo, k8s, aws and so on",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "text/html"
+                ],
+                "tags": [
+                    "main"
+                ],
+                "summary": "Show a list of services provided in Gobra",
+                "operationId": "showIndexPage",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/aws/svc/ami": {
+            "get": {
+                "description": "show information of ec2",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "text/html"
+                ],
+                "tags": [
+                    "aws"
+                ],
+                "summary": "ami",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/aws/svc/ec2": {
+            "get": {
+                "description": "show information of ec2",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "text/html"
+                ],
+                "tags": [
+                    "aws"
+                ],
+                "summary": "ec2",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/jenkins/info": {
+            "get": {
+                "description": "get detail info. about controller",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "jenkins"
+                ],
+                "summary": "Show a specific Jenkins controller info",
+                "operationId": "projectInfoHandler",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/jenkins/project/{proj}": {
+            "get": {
+                "description": "get detail info. about controller with branches",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "jenkins"
+                ],
+                "summary": "Show a specific Jenkins controller info",
+                "operationId": "jenkinsInstanceHandler",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Project Name",
+                        "name": "proj",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

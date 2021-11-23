@@ -115,6 +115,15 @@ func GetEC2Instances(sess *session.Session, filter *ec2.DescribeInstancesInput) 
 	}
 }
 
+
+// EC2Handler godoc
+// @Summary ec2
+// @Description show information of ec2
+// @Tags aws
+// @Accept json
+// @Produce html
+// @Success 200 {string} string
+// @Router /api/v1/aws/svc/ec2 [get]
 func EC2Handler(c *gin.Context) {
 	sess := GetSession()
 
@@ -190,6 +199,14 @@ func GetAMI(sess *session.Session, filters *ec2.DescribeImagesInput) ([]map[stri
 	return resultCollection, nil
 }
 
+// AMIHandler godoc
+// @Summary ami
+// @Description show information of ec2
+// @Tags aws
+// @Accept json
+// @Produce html
+// @Success 200 {string} string
+// @Router /api/v1/aws/svc/ami [get]
 func AMIHandler(c *gin.Context) {
 	sess := GetSession()
 	var filter *ec2.DescribeImagesInput
