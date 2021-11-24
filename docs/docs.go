@@ -44,7 +44,7 @@ var doc = `{
                     "main"
                 ],
                 "summary": "Show a list of services provided in Gobra",
-                "operationId": "showIndexPage",
+                "operationId": "ShowIndexPage",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -57,7 +57,7 @@ var doc = `{
         },
         "/api/v1/aws/svc/ami": {
             "get": {
-                "description": "show information of ec2",
+                "description": "show information of ami",
                 "consumes": [
                     "application/json"
                 ],
@@ -78,7 +78,36 @@ var doc = `{
                 }
             }
         },
-        "/api/v1/aws/svc/ec2": {
+        "/aws/sum": {
+            "get": {
+                "description": "list of services",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "text/html"
+                ],
+                "tags": [
+                    "aws"
+                ],
+                "summary": "List all services from AWS we provide in Gobra",
+                "responses": {
+                    "200": {
+                        "description": "pong",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/aws/svc/ec2": {
             "get": {
                 "description": "show information of ec2",
                 "consumes": [
@@ -108,13 +137,13 @@ var doc = `{
                     "application/json"
                 ],
                 "produces": [
-                    "application/json"
+                    "text/html"
                 ],
                 "tags": [
                     "jenkins"
                 ],
                 "summary": "Show a specific Jenkins controller info",
-                "operationId": "projectInfoHandler",
+                "operationId": "ProjectInfoHandler",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -132,13 +161,13 @@ var doc = `{
                     "application/json"
                 ],
                 "produces": [
-                    "application/json"
+                    "text/html"
                 ],
                 "tags": [
                     "jenkins"
                 ],
                 "summary": "Show a specific Jenkins controller info",
-                "operationId": "jenkinsInstanceHandler",
+                "operationId": "JenkinsInstanceHandler",
                 "parameters": [
                     {
                         "type": "string",

@@ -1,4 +1,4 @@
-package main
+package logic
 
 // module for "jenkins"
 
@@ -133,21 +133,21 @@ func getJenkinsMasterURL(Projshort string) []returnAppResp {
 
 /////////////////////////////template function//////////////////////////
 /* convert return item from gitlab folder by strip file sufix and convert to lowercase*/
-func convertFileJSONResp(n string) string {
+func ConvertFileJSONResp(n string) string {
 	return strings.ToLower(strings.Split(n, ".")[0])
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-// projectInfoHandler godoc
+// ProjectInfoHandler godoc
 // @Summary Show a specific Jenkins controller info
 // @Description get detail info. about controller
-// @ID projectInfoHandler
+// @ID ProjectInfoHandler
 // @Tags jenkins
 // @Accept  json
-// @Produce  json
+// @Produce  html
 // @Success 200 {string} todo
 // @Router /jenkins/info [get]
-func projectInfoHandler(c *gin.Context) {
+func ProjectInfoHandler(c *gin.Context) {
 	log4Caller()
 	log4Debug()
 	allProjects := getAllProjects()
@@ -159,18 +159,17 @@ func projectInfoHandler(c *gin.Context) {
 	}, "jenkins/info.tmpl")
 }
 
-
-// jenkinsInstanceHandler godoc
+// JenkinsInstanceHandler godoc
 // @Summary Show a specific Jenkins controller info
 // @Description get detail info. about controller with branches
-// @ID jenkinsInstanceHandler
+// @ID JenkinsInstanceHandler
 // @Tags jenkins
 // @Accept  json
-// @Produce  json
+// @Produce  html
 // @Param proj path string true "Project Name"
 // @Success 200 {string} todo
 // @Router /jenkins/project/{proj} [get]
-func jenkinsInstanceHandler(c *gin.Context) {
+func JenkinsInstanceHandler(c *gin.Context) {
 	log4Caller()
 	log4Debug()
 	log.Println("Load page in path: " + c.Request.URL.Path)

@@ -1,4 +1,4 @@
-package main
+package logic
 
 import (
 	"encoding/json"
@@ -9,43 +9,8 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"github.com/gin-gonic/gin"
 )
-
-// module for "support"
-
-///////////////////////////////////data strcture /////////////////////////////////////////
-type appResponse struct {
-	Apps []struct {
-		ID        string `json:"id"`
-		Container struct {
-			Docker struct {
-				Image      string `json:"image"`
-				Parameters []struct {
-					Key   string `json:"key"`
-					Value string `json:"value"`
-				} `json:"parameters"`
-			} `json:"docker"`
-		} `json:"container"`
-		Env struct {
-			JAVAOPTS        string `json:"JAVA_OPTS"`
-			PROJECTSEEDROOT string `json:"PROJECT_SEED_ROOT"`
-			NAME            string `json:"CLUSTER_NAME"`
-		} `json:"env"`
-		Labels struct {
-			SEEDROOT string `json:"SEED_ROOT"`
-			IsTest   string `json:"IS_TEST_INSTANCE"`
-			VHOST    string `json:"HAPROXY_0_VHOST"`
-		} `json:"labels"`
-		TasksRunning int `json:"TasksRunning"`
-	} `json:"apps"`
-}
-
-type returnAppResp struct {
-	Host    string
-	URL     string
-	Project string
-	Live    int
-}
 
 /////////////////////////////////////////////LOGGIN functions ///////////////////////////////////////////////
 func log4Debug() {
@@ -125,4 +90,23 @@ func parseDCOSJSONResponse(body []byte, instance string, projShort string) []ret
 	}
 	//fmt.Println(n)
 	return n
+}
+
+
+///////////////////////error handling////////////////////////
+func errorHandler(err error) {
+	//&(gin.Context).JSON(http.StatusBadRequest, gin.H{"Error: ": err})
+	panic(err.Error())
+}
+
+//////////////////////common rednering//////////////////////////////
+func renderResponse(c *gin.Context, data gin.H, tmplFile string) {
+	switch c.Request.Header.Get("Accept") {
+	case "application/json":
+		c.JSON(http.StatusOK, data["payload"])
+	case "application/xml":
+		c.XML(http.StatusOK, data["payload"])
+	default:
+		c.HTML(http.StatusOK, tmplFile, data)
+	}
 }

@@ -1,4 +1,4 @@
-package main
+package logic
 
 // module for "aws"
 
@@ -26,6 +26,9 @@ var serviceList = [...]string{
 	"iam",
 	"vpc",
 	"cost",
+	"s3",
+	"lambda",
+	"cloudwatch",
 }
 
 const awsProject string = "WenProjectName"
@@ -115,7 +118,6 @@ func GetEC2Instances(sess *session.Session, filter *ec2.DescribeInstancesInput) 
 	}
 }
 
-
 // EC2Handler godoc
 // @Summary ec2
 // @Description show information of ec2
@@ -123,7 +125,7 @@ func GetEC2Instances(sess *session.Session, filter *ec2.DescribeInstancesInput) 
 // @Accept json
 // @Produce html
 // @Success 200 {string} string
-// @Router /api/v1/aws/svc/ec2 [get]
+// @Router /aws/svc/ec2 [get]
 func EC2Handler(c *gin.Context) {
 	sess := GetSession()
 
@@ -139,7 +141,7 @@ func EC2Handler(c *gin.Context) {
 		"version":     render.VersionPage,
 		"author":      render.ContactAuthor,
 		"title":       "AWS Service EC2",
-		"project":     "WenProject",
+		"project":     awsProject,
 		"ec2InfoList": ec2InfoList,
 	}, "aws/ec2.tmpl")
 }
@@ -201,7 +203,7 @@ func GetAMI(sess *session.Session, filters *ec2.DescribeImagesInput) ([]map[stri
 
 // AMIHandler godoc
 // @Summary ami
-// @Description show information of ec2
+// @Description show information of ami
 // @Tags aws
 // @Accept json
 // @Produce html
@@ -219,7 +221,7 @@ func AMIHandler(c *gin.Context) {
 		"version": render.VersionPage,
 		"author":  render.ContactAuthor,
 		"title":   "AWS Service AMI",
-		"project": "WenProject",
+		"project": awsProject,
 		"AMIList": AMIList,
 	}, "aws/ami.tmpl")
 }
@@ -227,7 +229,7 @@ func AMIHandler(c *gin.Context) {
 ////////////////////////////////////////////////VPC/////////////////////////////////////////////////////////////////////////////////////
 func GetVPC(sess *session.Session) error {
 	//TODO
-	fmt.Print("nice")
+	fmt.Print("nice vpc")
 	return nil
 }
 
@@ -242,7 +244,7 @@ func VPCHandler(c *gin.Context) {
 //////////////////////////////////////////////IAM//////////////////////////////////////
 func GetIAM(sess *session.Session) error {
 	//TODO
-	fmt.Print("nice")
+	fmt.Print("nice iam")
 	return nil
 }
 
@@ -257,7 +259,7 @@ func IAMHandler(c *gin.Context) {
 /////////////////////////////////////////////Budget//////////////////////////////////
 func GetCost(sess *session.Session) error {
 	//TODO
-	fmt.Print("nice")
+	fmt.Print("nice cost")
 	return nil
 }
 
@@ -269,7 +271,62 @@ func CostHandler(c *gin.Context) {
 	}
 }
 
+/////////////////////////////////////////////S3//////////////////////////////////
+func GetS3(sess *session.Session) error {
+	//TODO
+	fmt.Print("nice s3")
+	return nil
+}
+
+func S3Handler(c *gin.Context) {
+	sess := GetSession()
+	err := GetS3(sess)
+	if err != nil {
+		errorHandler(err)
+	}
+}
+
+/////////////////////////////////////////////lambda//////////////////////////////////
+func GetLambda(sess *session.Session) error {
+	//TODO
+	fmt.Print("nice lambda")
+	return nil
+}
+
+func LambdaHandler(c *gin.Context) {
+	sess := GetSession()
+	err := GetLambda(sess)
+	if err != nil {
+		errorHandler(err)
+	}
+}
+
+/////////////////////////////////////////////cloudwatch//////////////////////////////////
+func GetCW(sess *session.Session) error {
+	//TODO
+	fmt.Print("nice lambda")
+	return nil
+}
+
+func CWHandler(c *gin.Context) {
+	sess := GetSession()
+	err := GetCW(sess)
+	if err != nil {
+		errorHandler(err)
+	}
+}
+
 ////////////////////////////////////////////////////////////Main///////////////////////////////////////////////////////////////////////////////////
+
+// AWSServiceHandler godoc
+// @Summary List all services from AWS we provide in Gobra
+// @Description list of services
+// @Tags aws
+// @Accept json
+// @Produce html
+// @Success 200 {string} string "pong"
+// @Failure 400 {string} string "ok"
+// @Router /aws/sum [get]
 func AWSServiceHandler(c *gin.Context) {
 	renderResponse(c, gin.H{
 		"version":     render.VersionPage,
@@ -295,6 +352,12 @@ func Dispatcher(c *gin.Context) {
 		IAMHandler(c)
 	case "cost":
 		CostHandler(c)
+	case "s3":
+		S3Handler(c)
+	case "cloudwatch":
+		CWHandler(c)
+	case "lambda":
+		LambdaHandler(c)
 	default:
 		fmt.Println("Invalid service in Gobra AWS")
 	}

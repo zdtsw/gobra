@@ -1,4 +1,4 @@
-package main
+package logic
 
 import (
 	"log"
@@ -51,7 +51,7 @@ type bilboOpsDropDown struct {
 }
 
 ////////////////////template functions/////////////////////////////
-func showStatusIcon(status string) string {
+func ShowStatusIcon(status string) string {
 	switch status {
 	case "red":
 		return "/img/redcross.svg"
@@ -65,7 +65,7 @@ func showStatusIcon(status string) string {
 }
 
 // module for "bilbo"
-func createBilboHandler(c *gin.Context) {
+func CreateBilboHandler(c *gin.Context) {
 	log4Caller()
 	log4Debug()
 	log.Println("Load page in path: " + c.Request.URL.Path)
@@ -89,7 +89,7 @@ func createBilboHandler(c *gin.Context) {
 
 }
 
-func updateBilboHandler(c *gin.Context) {
+func UpdateBilboHandler(c *gin.Context) {
 	log4Caller()
 	log4Debug()
 	log.Println("Load page in path: " + c.Request.URL.Path)
@@ -103,7 +103,7 @@ func loadQueryPageHandler(c *gin.Context) {
 	log.Println("Load page in path: " + c.Request.URL.Path)
 }
 
-func queryBilboHandler(c *gin.Context) {
+func QueryBilboHandler(c *gin.Context) {
 
 	log4Caller()
 	log4Debug()
@@ -152,7 +152,7 @@ func queryBilboHandler(c *gin.Context) {
 	// }
 }
 
-func healthBilboHandler(c *gin.Context) {
+func HealthBilboHandler(c *gin.Context) {
 	log4Caller()
 	log4Debug()
 	log.Println("Load page in path: " + c.Request.URL.Path)

@@ -17,7 +17,7 @@ paths:
       consumes:
       - application/json
       description: list jenkins, bilbo, k8s, aws and so on
-      operationId: showIndexPage
+      operationId: ShowIndexPage
       produces:
       - text/html
       responses:
@@ -32,7 +32,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: show information of ec2
+      description: show information of ami
       produces:
       - text/html
       responses:
@@ -43,7 +43,26 @@ paths:
       summary: ami
       tags:
       - aws
-  /api/v1/aws/svc/ec2:
+  /aws/sum:
+    get:
+      consumes:
+      - application/json
+      description: list of services
+      produces:
+      - text/html
+      responses:
+        "200":
+          description: pong
+          schema:
+            type: string
+        "400":
+          description: ok
+          schema:
+            type: string
+      summary: List all services from AWS we provide in Gobra
+      tags:
+      - aws
+  /aws/svc/ec2:
     get:
       consumes:
       - application/json
@@ -63,9 +82,9 @@ paths:
       consumes:
       - application/json
       description: get detail info. about controller
-      operationId: projectInfoHandler
+      operationId: ProjectInfoHandler
       produces:
-      - application/json
+      - text/html
       responses:
         "200":
           description: OK
@@ -79,7 +98,7 @@ paths:
       consumes:
       - application/json
       description: get detail info. about controller with branches
-      operationId: jenkinsInstanceHandler
+      operationId: JenkinsInstanceHandler
       parameters:
       - description: Project Name
         in: path
@@ -87,7 +106,7 @@ paths:
         required: true
         type: string
       produces:
-      - application/json
+      - text/html
       responses:
         "200":
           description: OK

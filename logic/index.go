@@ -1,4 +1,4 @@
-package main
+package logic
 
 // module for "index page"
 
@@ -7,16 +7,16 @@ import (
 	"net/http"
 )
 
-// showIndexPage godoc
+// ShowIndexPage godoc
 // @Summary Show a list of services provided in Gobra
 // @Description list jenkins, bilbo, k8s, aws and so on
-// @ID showIndexPage
+// @ID ShowIndexPage
 // @Tags main
 // @Accept  json
 // @Produce  html
-// @Success 200 {string} todo 
+// @Success 200 {string} todo
 // @Router / [get]
-func showIndexPage(c *gin.Context) {
+func ShowIndexPage(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{
 		"version": version,
 		"author":  author,
